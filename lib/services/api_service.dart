@@ -27,7 +27,7 @@ class ApiService {
     
     final data = json.decode(jsonStr);
     final list = data['lichhocdata'] as List;
-    print(list);
+    // print(list);
     return list.map((e) => BuoiHoc.fromJson(e)).toList();
   }
 }

@@ -3,12 +3,12 @@
 echo Xoa thu muc docs cu neu co...
 rmdir /s /q docs
 
-echo Tien hanh build web voi Flutter...
+@REM echo Tien hanh build web voi Flutter...
 @REM flutter build web
-IF ERRORLEVEL 1 (
-    echo Build that bai. Dung script.
-    exit /b 1
-)
+@REM IF ERRORLEVEL 1 (
+@REM     echo Build that bai. Dung script.
+@REM     exit /b 1
+@REM )
 
 echo Di chuyen build\web sang docs...
 move build\web docs

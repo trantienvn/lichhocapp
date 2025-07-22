@@ -66,10 +66,21 @@ class _LichHocScreenState extends State<LichHocScreen> {
     );
   }
 
+  Color _isToDay(DateTime date) {
+    if (DateFormat('dd/MM/yyyy').format(date) ==
+        DateFormat('dd/MM/yyyy').format(_today)) {
+      return const Color.fromARGB(255, 253, 146, 192);
+    } else if (_today.add(const Duration(days: 1)) == date) {
+      return const Color.fromARGB(255, 200, 126, 253);
+    }
+    return const Color.fromARGB(255, 246, 185, 255);
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (_loading)
+    if (_loading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
 
     bool started = false;
     bool haveLesson = false;
@@ -78,49 +89,44 @@ class _LichHocScreenState extends State<LichHocScreen> {
       DateTime curr = _today;
       while (curr.isBefore(DateFormat('dd/MM/yyyy').parse(_lich[0].tu))) {
         final dayIndex = curr.weekday;
-        final isToday =
-            DateFormat('dd/MM/yyyy').format(curr) ==
-            DateFormat('dd/MM/yyyy').format(_today);
         content.add(
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10),
-            child: 
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _daysOfWeek[dayIndex - 1],
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _daysOfWeek[dayIndex - 1],
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
-                  Text(
-                    DateFormat('dd/MM').format(curr),
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
+                    Text(
+                      DateFormat('dd/MM').format(curr),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
-                  _AmLich(curr),
-                ],
-              ),
-              Expanded(
-                child: Card(
-                  color: isToday
-                      ? const Color.fromARGB(255, 207, 207, 207)
-                      : _today.add(const Duration(days: 1)) == curr
-                      ? Color.fromARGB(255, 255, 64, 204)
-                      : Colors.grey[100],
-                  child: const ListTile(title: Text("Bạn chưa có lịch học...")),
+                    _AmLich(curr),
+                  ],
                 ),
-              ),
-            ],
+                Expanded(
+                  child: Card(
+                    color: _isToDay(curr),
+                    child: const ListTile(
+                      title: Text("Bạn chưa có lịch học..."),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ));
+        );
 
         curr = curr.add(const Duration(days: 1));
       }
@@ -148,10 +154,6 @@ class _LichHocScreenState extends State<LichHocScreen> {
         while (!curr.isAfter(end)) {
           final formatted = DateFormat('dd/MM/yyyy').format(curr);
           final dayIndex = curr.weekday;
-          final isToday =
-              DateFormat('dd/MM/yyyy').format(curr) ==
-              DateFormat('dd/MM/yyyy').format(_today);
-
           List lessons = [];
           for (var lesson in _lich) {
             if (lesson.mocTG == formatted) {
@@ -167,74 +169,76 @@ class _LichHocScreenState extends State<LichHocScreen> {
 
           content.add(
             Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: 
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _daysOfWeek[dayIndex - 1],
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    Text(
-                      DateFormat('dd/MM').format(curr),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _daysOfWeek[dayIndex - 1],
+                        style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
-                    ),
-                    _AmLich(curr),
-                  ],
-                ),
-                Expanded(
-                  child: found
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: lessons.map((lesson) {
-                            return Card(
-                              color: isToday ? Colors.green[100] : Colors.white,
-                              child: ListTile(
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      lesson.thoiGian ?? '',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                    Text(
-                                      "${lesson.tenHP}",
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    Text("Giảng viên: ${lesson.giangVien}"),
-                                    Text("Meet: ${lesson.meet}"),
-                                    Text("Tiết: ${lesson.tietHoc}"),
-                                    Text("Phòng: ${lesson.diaDiem}"),
-                                  ],
-                                ),
-                                // trailing: Text(lesson.tietHoc ?? ''),
-                              ),
-                            );
-                          }).toList(),
-                        )
-                      : Card(
-                          color: isToday ? Colors.grey[300] : Colors.grey[100],
-                          child: const ListTile(
-                            title: Text("Bạn không có lịch học..."),
-                          ),
+                      Text(
+                        DateFormat('dd/MM').format(curr),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
                         ),
-                ),
-              ],
+                      ),
+                      _AmLich(curr),
+                    ],
+                  ),
+                  Expanded(
+                    child: found
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: lessons.map((lesson) {
+                              return Card(
+                                color: _isToDay(curr),
+                                child: ListTile(
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        lesson.thoiGian ?? '',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      Text(
+                                        "${lesson.tenHP}",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      Text("Giảng viên: ${lesson.giangVien}"),
+                                      if (lesson.meet.length > 10)
+                                        Text("Meet: ${lesson.meet}"),
+                                      Text("Tiết: ${lesson.tietHoc}"),
+                                      Text("Phòng: ${lesson.diaDiem}"),
+                                    ],
+                                  ),
+                                  // trailing: Text(lesson.tietHoc ?? ''),
+                                ),
+                              );
+                            }).toList(),
+                          )
+                        : Card(
+                            color: _isToDay(curr),
+                            child: const ListTile(
+                              title: Text("Bạn không có lịch học..."),
+                            ),
+                          ),
+                  ),
+                ],
+              ),
             ),
-          ));
+          );
 
           curr = curr.add(const Duration(days: 1));
         }
@@ -264,7 +268,8 @@ class _LichHocScreenState extends State<LichHocScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Lịch học"), actions: [_buildActions()]),
+      appBar: AppBar(title: const Text("Lịch học"),backgroundColor: Color(0xFFF0AAFB), actions: [_buildActions()]),
+      backgroundColor: const Color.fromARGB(255, 253, 228, 255),
       body: RefreshIndicator(
         onRefresh: _fetch,
         child: SingleChildScrollView(
