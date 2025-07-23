@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lichhocapp/services/cache_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../models/buoi_hoc.dart';
 import '../services/api_service.dart';
 import 'login_screen.dart';
@@ -35,7 +36,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
     final pwd = prefs.getString('pwd') ?? '';
 
     try {
-      final result = await ApiService.fetchLichHoc(msv, pwd);
+      final result = await ApiService.fetchLichHoc(msv, pwd, true);
       setState(() {
         _lich = result;
         _loading = false;
@@ -54,7 +55,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
     });
     final prefs = await SharedPreferences.getInstance();
     await CacheService.clearCache(prefs.getString('msv') ?? ''); // Xóa cache
-    
+
     await prefs.remove('msv');
     await prefs.remove('pwd');
     Navigator.pushReplacement(
@@ -88,7 +89,11 @@ class _LichHocScreenState extends State<LichHocScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(
+        body: Center(
+          child: SpinKitPouringHourGlassRefined(color: Color.fromARGB(255, 154, 0, 159)),
+        ),
+      );
     }
 
     bool started = false;
@@ -277,7 +282,11 @@ class _LichHocScreenState extends State<LichHocScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Lịch học"),backgroundColor: Color(0xFFF0AAFB), actions: [_buildActions()]),
+      appBar: AppBar(
+        title: const Text("Lịch học"),
+        backgroundColor: Color(0xFFF0AAFB),
+        actions: [_buildActions()],
+      ),
       backgroundColor: const Color.fromARGB(255, 253, 228, 255),
       body: RefreshIndicator(
         onRefresh: _fetch,
