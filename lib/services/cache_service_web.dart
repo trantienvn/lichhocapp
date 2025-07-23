@@ -22,7 +22,7 @@ class CacheService {
       if (timestamp == null) return null;
 
       final now = DateTime.now();
-      final diff = now.difference(timestamp!);
+      final diff = now.difference(timestamp);
       if (diff.inHours < 24) {
         return parsed['data'];
       } else {

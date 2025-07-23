@@ -27,6 +27,9 @@ class _LichHocScreenState extends State<LichHocScreen> {
   }
 
   Future<void> _fetch() async {
+    setState(() {
+      _loading = true;
+    });
     final prefs = await SharedPreferences.getInstance();
     final msv = prefs.getString('msv') ?? '';
     final pwd = prefs.getString('pwd') ?? '';
