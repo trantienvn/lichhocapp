@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lichhocapp/services/cache_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/buoi_hoc.dart';
 import '../services/api_service.dart';
@@ -45,7 +46,12 @@ class _LichHocScreenState extends State<LichHocScreen> {
   }
 
   void _logout() async {
+    setState(() {
+      _loading = true;
+    });
     final prefs = await SharedPreferences.getInstance();
+    await CacheService.clearCache(prefs.getString('msv') ?? ''); // Xóa cache
+    
     await prefs.remove('msv');
     await prefs.remove('pwd');
     Navigator.pushReplacement(

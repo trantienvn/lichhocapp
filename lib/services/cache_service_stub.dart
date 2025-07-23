@@ -6,4 +6,10 @@ class CacheService {
   static Future<String?> readJson(String username) async {
     throw UnsupportedError('Unsupported platform');
   }
+  static Future<void> clearCache(String username) async {
+    throw UnsupportedError('Unsupported platform');
+  }
+  static Future<String?> readOldJson(String username) async {
+    throw UnsupportedError('Unsupported platform');
+  }
 }

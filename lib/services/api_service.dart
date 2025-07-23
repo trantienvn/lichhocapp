@@ -6,7 +6,10 @@ import 'cache_service.dart';
 class ApiService {
   static Future<List<BuoiHoc>> fetchLichHoc(String msv, String pwd) async {
     final url = Uri.parse('https://trantienvn.onrender.com/lichhoc?msv=$msv&pwd=$pwd');
-
+    final cachedJson = await CacheService.readJson(msv);
+    if (cachedJson != null) {
+      return _parseJson(cachedJson);
+    }
     try {
       final res = await http.get(url);
       if (res.statusCode == 200) {
@@ -14,7 +17,7 @@ class ApiService {
         return _parseJson(res.body);
       }
     } catch (_) {
-      final cached = await CacheService.readJson(msv);
+      final cached = await CacheService.readOldJson(msv);
       if (cached != null) {
         return _parseJson(cached);
       }
