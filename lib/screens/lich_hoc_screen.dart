@@ -89,9 +89,12 @@ class _LichHocScreenState extends State<LichHocScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Scaffold(
+      return Scaffold(
+        appBar: _appBarTitle(),
         body: Center(
-          child: SpinKitPouringHourGlassRefined(color: Color.fromARGB(255, 154, 0, 159)),
+          child: SpinKitPouringHourGlassRefined(
+            color: Color.fromARGB(255, 154, 0, 159),
+          ),
         ),
       );
     }
@@ -261,10 +264,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
 
     if (!started || !haveLesson) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text("Lịch học"),
-          actions: [_buildActions()],
-        ),
+        appBar: _appBarTitle(),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -282,11 +282,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Lịch học"),
-        backgroundColor: Color(0xFFF0AAFB),
-        actions: [_buildActions()],
-      ),
+      appBar: _appBarTitle(),
       backgroundColor: const Color.fromARGB(255, 253, 228, 255),
       body: RefreshIndicator(
         onRefresh: _fetch,
@@ -304,6 +300,14 @@ class _LichHocScreenState extends State<LichHocScreen> {
         IconButton(icon: const Icon(Icons.refresh), onPressed: _fetch),
         IconButton(icon: const Icon(Icons.logout), onPressed: _logout),
       ],
+    );
+  }
+
+  AppBar _appBarTitle() {
+    return AppBar(
+      title: const Text("Lịch học"),
+      backgroundColor: Color(0xFFF0AAFB),
+      actions: [_buildActions()],
     );
   }
 }
