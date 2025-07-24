@@ -7,6 +7,17 @@ import '../models/buoi_hoc.dart';
 import '../services/api_service.dart';
 import 'login_screen.dart';
 import '../lunar_converter.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/gestures.dart'; // Đảm bảo rằng GestureRecognizer đã được import
+
+
+// Hàm mở URL khi nhấn vào tên học phần hoặc meet
+void _launchUrl(String url) async {
+  Uri uri = Uri.parse(url);
+  if (!await launchUrl(uri)) {
+    throw 'Could not launch $url';
+  }
+}
 
 class LichHocScreen extends StatefulWidget {
   const LichHocScreen({super.key});
@@ -226,6 +237,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
                                           fontSize: 14,
                                         ),
                                       ),
+                                      // Tên học phần
                                       Text(
                                         "${lesson.tenHP}",
                                         style: const TextStyle(
@@ -234,13 +246,27 @@ class _LichHocScreenState extends State<LichHocScreen> {
                                         ),
                                       ),
                                       Text("Giảng viên: ${lesson.giangVien}"),
-                                      if (lesson.meet.length > 10)
-                                        Text("Meet: ${lesson.meet}"),
+                                      // Sử dụng RichText để tạo link cho meet
+                                      if (lesson.meet.length > 8)
+                                      Text.rich(
+                                         TextSpan(
+                                            text: "Meet: ${lesson.meet}",
+                                            style: const TextStyle(
+                                              
+                                            ),
+                                            recognizer: TapGestureRecognizer()
+                                              ..onTap = () {
+                                                // Giả sử URL của meet là link Google Meet/Zoom
+                                                _launchUrl(
+                                                  lesson.meet,
+                                                ); // Mở link meet khi nhấn
+                                              },
+                                          ),
+                                        ),
                                       Text("Tiết: ${lesson.tietHoc}"),
                                       Text("Phòng: ${lesson.diaDiem}"),
                                     ],
                                   ),
-                                  // trailing: Text(lesson.tietHoc ?? ''),
                                 ),
                               );
                             }).toList(),
