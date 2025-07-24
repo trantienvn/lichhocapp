@@ -10,7 +10,6 @@ import '../lunar_converter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/gestures.dart'; // Đảm bảo rằng GestureRecognizer đã được import
 
-
 // Hàm mở URL khi nhấn vào tên học phần hoặc meet
 void _launchUrl(String url) async {
   Uri uri = Uri.parse(url);
@@ -114,50 +113,63 @@ class _LichHocScreenState extends State<LichHocScreen> {
     bool haveLesson = false;
     List<Widget> content = [];
     if (DateFormat('dd/MM/yyyy').parse(_lich[0].tu).isAfter(_today)) {
-      DateTime curr = _today;
-      while (curr.isBefore(DateFormat('dd/MM/yyyy').parse(_lich[0].tu))) {
-        final dayIndex = curr.weekday;
-        content.add(
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _daysOfWeek[dayIndex - 1],
+      int numberOfDays = DateFormat(
+        'dd/MM/yyyy',
+      ).parse(_lich[0].tu).difference(_today).inDays;
+      content.add(
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _daysOfWeek[_today.weekday - 1],
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      ),
+                  ),
+                  Text(
+                      DateFormat('dd/MM').format(_today),
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: Colors.black,
                       ),
                     ),
-                    Text(
-                      DateFormat('dd/MM').format(curr),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                      ),
-                    ),
-                    _AmLich(curr),
-                  ],
-                ),
-                Expanded(
-                  child: Card(
-                    color: _isToDay(curr),
-                    child: const ListTile(
-                      title: Text("Bạn chưa có lịch học..."),
+                  _AmLich(_today),
+                ],
+              ),
+              Expanded(
+                child: Card(
+                  color: Color.fromARGB(255, 200, 126, 253),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      // padding: const EdgeInsets.all(8.0),
+                      children: [
+                        SpinKitPouringHourGlassRefined(
+                          color: Color.fromARGB(255, 22, 22, 22),
+                        ),
+                        Text(
+                          "Lịch học sẽ bắt đầu sau $numberOfDays ngày",
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        );
-
-        curr = curr.add(const Duration(days: 1));
-      }
+        ),
+      );
     }
     for (var item in _lich) {
       if (item.tuan != null) {
@@ -248,12 +260,10 @@ class _LichHocScreenState extends State<LichHocScreen> {
                                       Text("Giảng viên: ${lesson.giangVien}"),
                                       // Sử dụng RichText để tạo link cho meet
                                       if (lesson.meet.length > 8)
-                                      Text.rich(
-                                         TextSpan(
+                                        Text.rich(
+                                          TextSpan(
                                             text: "Meet: ${lesson.meet}",
-                                            style: const TextStyle(
-                                              
-                                            ),
+                                            style: const TextStyle(),
                                             recognizer: TapGestureRecognizer()
                                               ..onTap = () {
                                                 // Giả sử URL của meet là link Google Meet/Zoom
