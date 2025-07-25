@@ -29,6 +29,9 @@ class ApiService {
   static List<BuoiHoc> _parseJson(String jsonStr) {
     
     final data = json.decode(jsonStr);
+    if (data['error']==true) {
+      throw Exception('${data['message']}');
+    }
     final list = data['lichhocdata'] as List;
     // print(list);
     return list.map((e) => BuoiHoc.fromJson(e)).toList();

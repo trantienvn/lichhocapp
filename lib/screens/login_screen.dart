@@ -40,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const Text(
                 "Đăng nhập vào Lịch Học",
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 34,
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 107, 0, 114),
                 ),

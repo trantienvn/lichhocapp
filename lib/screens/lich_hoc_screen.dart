@@ -28,13 +28,42 @@ class LichHocScreen extends StatefulWidget {
 class _LichHocScreenState extends State<LichHocScreen> {
   List<BuoiHoc> _lich = [];
   bool _loading = true;
+  bool _hasAnError = false; // Biến để kiểm tra lỗi
   final _today = DateTime.now();
   final _daysOfWeek = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
 
   @override
   void initState() {
     super.initState();
-    _fetch();
+    _loadFirst();
+  }
+
+  Future<void> _loadFirst() async {
+    setState(() {
+      _loading = true;
+    });
+    final prefs = await SharedPreferences.getInstance();
+    final msv = prefs.getString('msv') ?? '';
+    final pwd = prefs.getString('pwd') ?? '';
+    final isFirstTime = prefs.getBool('isFirstTime') ?? true;
+    // if (isFirstTime) {
+    // Nếu là lần đầu tiên, tải lịch học và lưu trạng thái
+    prefs.setBool('isFirstTime', false);
+
+    try {
+      final result = await ApiService.fetchLichHoc(msv, pwd, isFirstTime);
+      setState(() {
+        _lich = result;
+        _loading = false;
+      });
+    } catch (e) {
+      print('Lỗi: $e');
+      setState(() {
+        _loading = false;
+        _hasAnError = true;
+      }); // Đánh dấu có lỗi
+    }
+    // }
   }
 
   Future<void> _fetch() async {
@@ -68,13 +97,14 @@ class _LichHocScreenState extends State<LichHocScreen> {
 
     await prefs.remove('msv');
     await prefs.remove('pwd');
+    await prefs.remove('isFirstTime'); // Xóa trạng thái lần đầu tiên
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => LoginScreen()),
     );
   }
 
-  Text _AmLich(DateTime date) {
+  Text _amLich(DateTime date) {
     final lunar = convertSolar2Lunar(date.day, date.month, date.year, 7);
     // return "ÂL${lunar[0]}/${lunar[1]} ${lunar[3] == 1 ? 'N' : ''}";
     return Text(
@@ -108,7 +138,28 @@ class _LichHocScreenState extends State<LichHocScreen> {
         ),
       );
     }
-
+    if (_hasAnError) {
+      return Scaffold(
+        appBar: _appBarTitle(),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset("assets/oops.png", height: 120),
+              const SizedBox(height: 20),
+              const Text(
+                "Aww. Có lỗi xảy ra khi tải lịch học!",
+                style: TextStyle(fontSize: 18, color: Colors.red),
+              ),
+              ElevatedButton(
+                onPressed: _logout,
+                child: const Text("Đăng Nhập Lại"),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     bool started = false;
     bool haveLesson = false;
     List<Widget> content = [];
@@ -128,18 +179,18 @@ class _LichHocScreenState extends State<LichHocScreen> {
                   Text(
                     _daysOfWeek[_today.weekday - 1],
                     style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                      ),
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
                   ),
                   Text(
-                      DateFormat('dd/MM').format(_today),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                      ),
+                    DateFormat('dd/MM').format(_today),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
                     ),
-                  _AmLich(_today),
+                  ),
+                  _amLich(_today),
                 ],
               ),
               Expanded(
@@ -148,14 +199,14 @@ class _LichHocScreenState extends State<LichHocScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       // padding: const EdgeInsets.all(8.0),
                       children: [
                         SpinKitPouringHourGlassRefined(
                           color: Color.fromARGB(255, 22, 22, 22),
                         ),
                         Text(
-                          "Lịch học sẽ bắt đầu sau $numberOfDays ngày",
+                          "Lịch học sẽ bắt đầu sau ${numberOfDays + 1} ngày",
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.black,
@@ -182,12 +233,35 @@ class _LichHocScreenState extends State<LichHocScreen> {
         if (!started) started = true;
         content.add(
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Text(
-              "${item.tuan}",
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Card(
+                  color: Color.fromARGB(255, 107, 0, 114),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      // padding: const EdgeInsets.all(8.0),
+                      children: [
+                        Text(
+                          "${item.tuan} (${item.tu} đến ${item.den})",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
+        ),
         );
 
         DateTime curr = start;
@@ -213,22 +287,25 @@ class _LichHocScreenState extends State<LichHocScreen> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _daysOfWeek[dayIndex - 1],
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      Text(
-                        DateFormat('dd/MM').format(curr),
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _daysOfWeek[dayIndex - 1],
+                          style: const TextStyle(fontWeight: FontWeight.w600),
                         ),
-                      ),
-                      _AmLich(curr),
-                    ],
+                        Text(
+                          DateFormat('dd/MM').format(curr),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                        ),
+                        _amLich(curr),
+                      ],
+                    ),
                   ),
                   Expanded(
                     child: found
