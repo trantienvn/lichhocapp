@@ -6,10 +6,10 @@ import 'cache_service.dart';
 class ApiService {
   static Future<List<BuoiHoc>> fetchLichHoc(String msv, String pwd, bool? reload) async {
     final url = Uri.parse('https://trantienvn.onrender.com/lichhoc?msv=$msv&pwd=$pwd');
-    final cachedJson = await CacheService.readJson(msv);
-    if (cachedJson != null && !reload!) {
-      return _parseJson(cachedJson);
-    }
+    // final cachedJson = await CacheService.readJson(msv);
+    // if (cachedJson != null && !reload!) {
+    //   return _parseJson(cachedJson);
+    // }
     try {
       final res = await http.get(url);
       if (res.statusCode == 200) {
@@ -25,7 +25,13 @@ class ApiService {
 
     throw Exception('Không thể tải dữ liệu lịch học từ server hoặc cache');
   }
-
+  static Future<List<BuoiHoc>> getLichHocFromCache(String msv, String pwd) async {
+    final cachedJson = await CacheService.readJson(msv);
+    if (cachedJson != null) {
+      return _parseJson(cachedJson);
+    }
+    return fetchLichHoc(msv, pwd, false);
+  }
   static List<BuoiHoc> _parseJson(String jsonStr) {
     
     final data = json.decode(jsonStr);

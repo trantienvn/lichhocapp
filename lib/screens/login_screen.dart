@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'lich_hoc_screen.dart';
+import 'dart:html' as html;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -29,6 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    html.document.title = "Lịch Học - Đăng Nhập";
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 253, 228, 255), // nền trắng
       body: Center(

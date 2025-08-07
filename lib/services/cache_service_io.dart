@@ -42,16 +42,16 @@ class CacheService {
       if (timestamp == null) return null;
 
       final now = DateTime.now();
-      if (now.difference(timestamp).inHours < 24) {
+      // if (now.difference(timestamp).inHours < 24) {
         return jsonMap['data'];
-      } else {
-        await file.delete(); // Xóa nếu hết hạn
-      }
+      // } else {
+      //   await file.delete(); // Xóa nếu hết hạn
+      // }
     } catch (_) {
       return null;
     }
 
-    return null;
+    // return null;
   }
   static Future<void> clearCache(String username) async {
     final path = await _getFilePath(username);

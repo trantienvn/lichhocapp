@@ -8,6 +8,7 @@ import '../services/api_service.dart';
 import 'login_screen.dart';
 import '../lunar_converter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:html' as html;
 import 'package:flutter/gestures.dart'; // Đảm bảo rằng GestureRecognizer đã được import
 
 // Hàm mở URL khi nhấn vào tên học phần hoặc meet
@@ -35,6 +36,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
   @override
   void initState() {
     super.initState();
+    html.document.title = "Lịch Học";
     _loadFirst();
   }
 
@@ -45,13 +47,9 @@ class _LichHocScreenState extends State<LichHocScreen> {
     final prefs = await SharedPreferences.getInstance();
     final msv = prefs.getString('msv') ?? '';
     final pwd = prefs.getString('pwd') ?? '';
-    final isFirstTime = prefs.getBool('isFirstTime') ?? true;
-    // if (isFirstTime) {
-    // Nếu là lần đầu tiên, tải lịch học và lưu trạng thái
-    prefs.setBool('isFirstTime', false);
 
     try {
-      final result = await ApiService.fetchLichHoc(msv, pwd, isFirstTime);
+      final result = await ApiService.getLichHocFromCache(msv, pwd);
       setState(() {
         _lich = result;
         _loading = false;

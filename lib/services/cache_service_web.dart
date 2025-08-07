@@ -23,22 +23,24 @@ class CacheService {
 
       final now = DateTime.now();
       final diff = now.difference(timestamp);
-      if (diff.inHours < 24) {
+      // if (diff.inHours < 24) {
         return parsed['data'];
-      } else {
-        html.window.localStorage.remove(username); // Xóa nếu hết hạn
-      }
+      // } else {
+      //   html.window.localStorage.remove(username); // Xóa nếu hết hạn
+      // }
     } catch (e) {
       return null; // Lỗi định dạng hoặc JSON sai
     }
 
-    return null;
+    // return null;
   }
   static Future<void> clearCache(String username) async {
     html.window.localStorage.remove(username);
     html.window.localStorage.remove("$username.old");
   }
   static Future<String?> readOldJson(String username) async {
-    return html.window.localStorage["$username.old"];
+    // return html.window.localStorage["$username.old"];
+    final old = html.window.localStorage["$username.old"];
+    if (old == null || old.isEmpty) return html.window.localStorage[username];
   }
 }
