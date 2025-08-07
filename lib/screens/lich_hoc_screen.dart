@@ -263,7 +263,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
         );
 
         DateTime curr = start;
-        while (!curr.isAfter(end)) {
+        while (isSameOrBefore(curr,end)) {
           final formatted = DateFormat('dd/MM/yyyy').format(curr);
           final dayIndex = curr.weekday;
           List lessons = [];
@@ -404,7 +404,11 @@ class _LichHocScreenState extends State<LichHocScreen> {
       ),
     );
   }
-
+bool isSameOrBefore(DateTime a, DateTime b) {
+  return a.year < b.year ||
+         (a.year == b.year && a.month < b.month) ||
+         (a.year == b.year && a.month == b.month && a.day <= b.day);
+}
   Widget _buildActions() {
     return Row(
       children: [
