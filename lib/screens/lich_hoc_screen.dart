@@ -236,14 +236,19 @@ class _LichHocScreenState extends State<LichHocScreen> {
         if (start.isBefore(_today)) start = _today;
         if (!started) started = true;
         content.add(
-          glassCard(
-            child: Center(
-              child: Text(
-                "${item.tuan} (${item.tu} đến ${item.den})",
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.white,
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600), // set max width
+              child: glassCard(
+                child: Center(
+                  child: Text(
+                    "${item.tuan} (${item.tu} đến ${item.den})",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -259,102 +264,110 @@ class _LichHocScreenState extends State<LichHocScreen> {
           bool found = lessons.isNotEmpty;
           haveLesson = true;
           content.add(
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 8, top: 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _daysOfWeek[dayIndex - 1],
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: 600,
+                ), // set max width
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8, top: 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _daysOfWeek[dayIndex - 1],
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            DateFormat('dd/MM').format(curr),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                          _amLich(curr),
+                        ],
                       ),
-                      Text(
-                        DateFormat('dd/MM').format(curr),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                      _amLich(curr),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: found
-                      ? Column(
-                          children: lessons.map((lesson) {
-                            return glassCard(
-                              color: _isToDay(curr),
-                              child: ListTile(
-                                title: Text(
-                                  "${lesson.tenHP}",
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      lesson.thoiGian ?? '',
+                    ),
+                    Expanded(
+                      child: found
+                          ? Column(
+                              children: lessons.map((lesson) {
+                                return glassCard(
+                                  color: _isToDay(curr),
+                                  child: ListTile(
+                                    title: Text(
+                                      lesson.tenHP,
                                       style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
                                         color: Colors.white,
                                       ),
                                     ),
-                                    Text(
-                                      "Giảng viên: ${lesson.giangVien}",
-                                      style: const TextStyle(
-                                        color: Colors.white70,
-                                      ),
-                                    ),
-                                    if (lesson.meet.length > 8)
-                                      Text.rich(
-                                        TextSpan(
-                                          text: "Meet: ${lesson.meet}",
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          lesson.thoiGian ?? '',
                                           style: const TextStyle(
-                                            color: Colors.lightBlueAccent,
+                                            color: Colors.white,
                                           ),
-                                          recognizer: TapGestureRecognizer()
-                                            ..onTap = () =>
-                                                _launchUrl(lesson.meet),
                                         ),
-                                      ),
-                                    Text(
-                                      "Tiết: ${lesson.tietHoc}",
-                                      style: const TextStyle(
-                                        color: Colors.white70,
-                                      ),
+                                        Text(
+                                          "Giảng viên: ${lesson.giangVien}",
+                                          style: const TextStyle(
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                        if (lesson.meet.length > 8)
+                                          Text.rich(
+                                            TextSpan(
+                                              text: "Meet: ${lesson.meet}",
+                                              style: const TextStyle(
+                                                color: Colors.lightBlueAccent,
+                                              ),
+                                              recognizer: TapGestureRecognizer()
+                                                ..onTap = () =>
+                                                    _launchUrl(lesson.meet),
+                                            ),
+                                          ),
+                                        Text(
+                                          "Tiết: ${lesson.tietHoc}",
+                                          style: const TextStyle(
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                        Text(
+                                          "Phòng: ${RegExp(r'<[^>]+>').hasMatch(lesson.diaDiem) ? "Online" : lesson.diaDiem}",
+                                          style: const TextStyle(
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    Text(
-                                      "Phòng: ${lesson.diaDiem}",
-                                      style: const TextStyle(
-                                        color: Colors.white70,
-                                      ),
-                                    ),
-                                  ],
+                                  ),
+                                );
+                              }).toList(),
+                            )
+                          : glassCard(
+                              color: _isToDay(curr),
+                              child: const ListTile(
+                                title: Text(
+                                  "Bạn không có lịch học...",
+                                  style: TextStyle(color: Colors.white),
                                 ),
                               ),
-                            );
-                          }).toList(),
-                        )
-                      : glassCard(
-                          color: _isToDay(curr),
-                          child: const ListTile(
-                            title: Text(
-                              "Bạn không có lịch học...",
-                              style: TextStyle(color: Colors.white),
                             ),
-                          ),
-                        ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           );
 
