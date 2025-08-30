@@ -11,8 +11,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _msvController = TextEditingController();
-  final _pwdController = TextEditingController();
+  final TextEditingController _msvController = TextEditingController();
+  final TextEditingController _pwdController = TextEditingController();
   bool _obscurePwd = true;
 
   void _login(BuildContext context) async {
@@ -32,107 +32,151 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     html.document.title = "Lịch Học - Đăng Nhập";
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 253, 228, 255), // nền trắng
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                "Đăng nhập vào Lịch Học",
-                style: TextStyle(
-                  fontSize: 34,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 107, 0, 114),
-                ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Ảnh nền
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/lqglss.jpg"),
+                fit: BoxFit.cover,
               ),
-              const SizedBox(height: 32),
-
-              // Card chứa ô nhập
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(
-                    255,
-                    244,
-                    172,
-                    255,
-                  ), // tím nhạt giống lich_hoc_screen
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: _msvController,
-                      decoration: InputDecoration(
-                        labelText: "Mã sinh viên",
-                        prefixIcon: const Icon(Icons.person),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: _pwdController,
-                      obscureText: _obscurePwd,
-                      decoration: InputDecoration(
-                        labelText: "Mật khẩu",
-                        prefixIcon: const Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePwd
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscurePwd = !_obscurePwd;
-                            });
-                          },
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 36),
-
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.login, color: Colors.white),
-                  label: const Text(
-                    "Vào lịch học",
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(
-                      255,
-                      114,
-                      0,
-                      156,
-                    ), // hoặc tím đậm nếu muốn đồng bộ hơn
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: () => _login(context),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          // Overlay màu
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.black.withOpacity(0.6),
+                  Colors.blue.withOpacity(0.3),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+          // Nội dung login
+          Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.3),
+                    width: 1.5,
+                  ),
+                ),
+                child: AutofillGroup(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        "Đăng Nhập",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Ô nhập MSV
+                      SizedBox(
+                        width: 350,
+                        child: TextFormField(
+                          controller: _msvController,
+                          autofillHints: const [AutofillHints.username],
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: "Mã sinh viên",
+                            labelStyle:
+                                const TextStyle(color: Colors.white70),
+                            prefixIcon: const Icon(Icons.person,
+                                color: Colors.white),
+                            filled: true,
+                            fillColor: Colors.white.withOpacity(0.1),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Ô nhập mật khẩu
+                      SizedBox(
+                        width: 350,
+                        child: TextFormField(
+                          controller: _pwdController,
+                          autofillHints: const [AutofillHints.password],
+                          obscureText: _obscurePwd,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: "Mật khẩu",
+                            labelStyle:
+                                const TextStyle(color: Colors.white70),
+                            prefixIcon: const Icon(Icons.lock,
+                                color: Colors.white),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePwd
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscurePwd = !_obscurePwd;
+                                });
+                              },
+                            ),
+                            filled: true,
+                            fillColor: Colors.white.withOpacity(0.1),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 30),
+
+                      // Nút đăng nhập
+                      SizedBox(
+                        width: 200,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueAccent,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: ()=>_login(context),
+                          child: const Text(
+                            "Đăng Nhập",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
