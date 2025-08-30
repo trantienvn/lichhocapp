@@ -1,27 +1,31 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <base href="/">
 
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- SEO Meta -->
   <title>Lịch Học</title>
   <link rel="icon" href="./favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-  <meta name="description" content="Ứng dụng xem lịch học theo tuần, hỗ trợ cả Meet, giảng viên và phòng học. Tối ưu cho sinh viên.">
+  <meta name="description"
+    content="Ứng dụng xem lịch học theo tuần, hỗ trợ cả Meet, giảng viên và phòng học. Tối ưu cho sinh viên.">
   <meta name="keywords" content="lich hoc, lịch học ICTU, app lịch học, sinh viên, thời khóa biểu">
   <meta name="author" content="Trần Tiến">
   <meta name="theme-color" content="#158799">
+  <link rel="canonical" href="https://lichhoc.trantien.id.vn/">
+  <meta name="robots" content="index, follow">
 
   <!-- PWA Meta -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Lịch Học">
-  <link rel="apple-touch-icon" href="./icons/Icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <link rel="manifest" href="./manifest.json">
 
   <!-- Favicon -->
@@ -30,7 +34,7 @@
   <!-- Open Graph for Facebook, Zalo -->
   <meta property="og:title" content="Lịch Học - Ứng dụng thời khóa biểu sinh viên">
   <meta property="og:description" content="Xem lịch học chi tiết theo tuần, hỗ trợ Meet, phòng học và giảng viên.">
-  <meta property="og:image" content="https://lichhoc.trantien.id.vn/icons/Icon-512.png">
+  <meta property="og:image" content="https://lichhoc.trantien.id.vn/icons/icon-512.png">
   <meta property="og:url" content="https://lichhoc.trantien.id.vn/">
   <meta property="og:type" content="website">
 
@@ -38,9 +42,34 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Lịch Học">
   <meta name="twitter:description" content="Ứng dụng lịch học cho sinh viên ICTU - hỗ trợ offline và chia sẻ.">
-  <meta name="twitter:image" content="https://lichhoc.trantien.id.vn/icons/Icon-512.png">
+  <meta name="twitter:image" content="https://lichhoc.trantien.id.vn/icons/icon-512.png">
 </head>
+
 <body>
+  <noscript>
+    <p>Ứng dụng Lịch Học cho sinh viên ICTU. Xem lịch học chi tiết theo tuần, hỗ trợ Meet, giảng viên và phòng học.</p>
+  </noscript>
+  <div id="app-loading">
+    <h1>Lịch Học ICTU</h1>
+    <p>Xem lịch học trực tuyến, hỗ trợ giảng viên, phòng học và Google Meet.</p>
+  </div>
   <script src="./flutter_bootstrap.js" async></script>
 </body>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Lịch Học",
+  "operatingSystem": "Web",
+  "applicationCategory": "EducationApplication",
+  "description": "Ứng dụng xem lịch học theo tuần, hỗ trợ cả Meet, giảng viên và phòng học.",
+  "url": "https://lichhoc.trantien.id.vn/",
+  "author": {
+    "@type": "Person",
+    "name": "Trần Tiến"
+  },
+  "image": "https://lichhoc.trantien.id.vn/icons/icon-512.png"
+}
+</script>
+
 </html>
