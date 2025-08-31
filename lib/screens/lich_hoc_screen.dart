@@ -232,7 +232,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
       if (item.tuan != null) {
         DateTime start = DateFormat('dd/MM/yyyy').parse(item.tu);
         DateTime end = DateFormat('dd/MM/yyyy').parse(item.den);
-        if (end.isBefore(_today)) continue;
+        if ((end.add(new Duration(days: 1))).isBefore(_today)) continue;
         if (start.isBefore(_today)) start = _today;
         if (!started) started = true;
         content.add(
