@@ -9,7 +9,7 @@ import '../services/api_service.dart';
 import 'login_screen.dart';
 import '../lunar_converter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:html' as html;
+// import 'dart:html' as html;
 import 'package:flutter/gestures.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -42,7 +42,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
   void initState() {
     super.initState();
     _selectedDay = DateTime.now();
-    html.document.title = "Lịch Học";
+    // html.document.title = "Lịch Học";
     _loadFirst();
   }
 
