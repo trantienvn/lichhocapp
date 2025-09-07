@@ -11,6 +11,7 @@ import '../lunar_converter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:html' as html;
 import 'package:flutter/gestures.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 void _launchUrl(String url) async {
   Uri uri = Uri.parse(url);
@@ -28,6 +29,10 @@ class LichHocScreen extends StatefulWidget {
 
 class _LichHocScreenState extends State<LichHocScreen> {
   List<BuoiHoc> _lich = [];
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
+  Map<String, List<BuoiHoc>> _lessons = {};
+  bool _danhsach = false;
   bool _loading = true;
   bool _hasAnError = false;
   final _today = DateTime.now();
@@ -36,6 +41,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
   @override
   void initState() {
     super.initState();
+    _selectedDay = DateTime.now();
     html.document.title = "Lịch Học";
     _loadFirst();
   }
@@ -48,6 +54,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
     try {
       final result = await ApiService.getLichHocFromCache(msv, pwd);
       setState(() {
+        _lessons = ApiService.conv(result);
         _lich = result;
         _loading = false;
       });
@@ -170,6 +177,9 @@ class _LichHocScreenState extends State<LichHocScreen> {
           ),
         ),
       );
+    }
+    if (!_danhsach) {
+      return RenderLichThang();
     }
     bool started = false;
     bool haveLesson = false;
@@ -330,7 +340,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
                                             TextSpan(
                                               text: "Meet: ${lesson.meet}",
                                               style: const TextStyle(
-                                                color: Colors.lightBlueAccent,
+                                                color: Colors.white70,
                                               ),
                                               recognizer: TapGestureRecognizer()
                                                 ..onTap = () =>
@@ -493,6 +503,298 @@ class _LichHocScreenState extends State<LichHocScreen> {
     );
   }
 
+  String convertToLunar(DateTime date) {
+    final lunar = convertSolar2Lunar(date.day, date.month, date.year, 7);
+    return "${lunar[0]}/${lunar[1]} ${lunar[3] == 1 ? 'N' : ''}";
+  }
+
+  bool isSpecialLunarDay(String lunar) {
+    return lunar.startsWith('1/') || lunar.startsWith('15/');
+  }
+
+  Widget _buildDayCell({
+    required DateTime day,
+    required String lunar,
+    required bool isSpecial,
+    Color? textColor,
+    Color? lunarColor,
+    Color? backgroundColor,
+    int? lessonCount = 0,
+  }) {
+    return SizedBox(
+      width: 60, // 👈 tăng kích thước
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            margin: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: (backgroundColor ?? Colors.white.withOpacity(0.1)),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.2),
+                width: 1,
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "${List.filled(lessonCount ?? 0, '•').join()}",
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color:
+                        textColor ??
+                        (isSpecial ? Colors.deepOrange : Colors.white),
+                  ),
+                ),
+                Text(
+                  '${day.day}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color:
+                        textColor ??
+                        (isSpecial ? Colors.deepOrange : Colors.white),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  lunar,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color:
+                        lunarColor ??
+                        (isSpecial
+                            ? Colors.red[600]
+                            : const Color.fromARGB(255, 218, 218, 218)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCard(List<BuoiHoc> lessons) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: lessons.map((lesson) {
+        return glassCard(
+          color: _isToDay(_focusedDay),
+          child: ListTile(
+            title: Text(
+              lesson.tenHP ?? '',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  lesson.thoiGian ?? '',
+                  style: const TextStyle(color: Colors.white),
+                ),
+                Text(
+                  "Giảng viên: ${lesson.giangVien}",
+                  style: const TextStyle(color: Colors.white70),
+                ),
+                if ((lesson.meet ?? "").length > 8)
+                  Text.rich(
+                    TextSpan(
+                      text: "Meet: ${lesson.meet}",
+                      style: const TextStyle(color: Colors.white70),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () => _launchUrl(lesson.meet ?? ''),
+                    ),
+                  ),
+                Text(
+                  "Tiết: ${lesson.tietHoc}",
+                  style: const TextStyle(color: Colors.white70),
+                ),
+                Text(
+                  "Phòng: ${RegExp(r'<[^>]+>').hasMatch(lesson.diaDiem ?? '') ? "Online" : lesson.diaDiem}",
+                  style: const TextStyle(color: Colors.white70),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget RenderLichThang() {
+    return Scaffold(
+      appBar: _appBarTitle(),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/lqglss.jpg"),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.blue.withOpacity(0.6),
+                  Colors.black.withOpacity(0.4),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+          RefreshIndicator(
+            onRefresh: _fetch,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                children: [
+                  TableCalendar(
+                    firstDay: DateTime.utc(2020, 1, 1),
+                    lastDay: DateTime.utc(2030, 12, 31),
+                    focusedDay: _focusedDay,
+                    rowHeight: 80,
+                    locale: 'vi_VN',
+                    selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                    onDaySelected: (selectedDay, focusedDay) {
+                      setState(() {
+                        _selectedDay = selectedDay;
+                        _focusedDay = focusedDay;
+                      });
+                    },
+                    calendarFormat: CalendarFormat.month,
+                    startingDayOfWeek: StartingDayOfWeek.monday,
+                    headerStyle: HeaderStyle(
+                      formatButtonVisible: false, // để thấy nút chọn
+                      formatButtonTextStyle: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      formatButtonDecoration: BoxDecoration(
+                        border: Border.all(color: Colors.white),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      titleCentered: true,
+                      leftChevronIcon: const Icon(
+                        Icons.chevron_left,
+                        color: Colors.white,
+                      ),
+                      rightChevronIcon: const Icon(
+                        Icons.chevron_right,
+                        color: Colors.white,
+                      ),
+                      titleTextStyle: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      titleTextFormatter: (date, locale) =>
+                          'Tháng ${date.month}, ${date.year}',
+                    ),
+                    daysOfWeekStyle: const DaysOfWeekStyle(
+                      weekdayStyle: TextStyle(color: Colors.white),
+                      weekendStyle: TextStyle(
+                        color: Color.fromARGB(255, 255, 74, 74),
+                      ),
+                    ),
+
+                    calendarBuilders: CalendarBuilders(
+                      defaultBuilder: (context, day, focusedDay) {
+                        final lunar = convertToLunar(day);
+                        final isSpecial = isSpecialLunarDay(lunar);
+
+                        return _buildDayCell(
+                          day: day,
+                          lunar: lunar,
+                          isSpecial: isSpecial,
+                          textColor: Colors.white,
+                          lessonCount: _lessons['${day.day.toString().padLeft(2, '0')}/${day.month.toString().padLeft(2, '0')}/${day.year}']?.length
+                        );
+                      },
+
+                      selectedBuilder: (context, day, focusedDay) {
+                        final lunar = convertToLunar(day);
+                        final isSpecial = isSpecialLunarDay(lunar);
+
+                        return _buildDayCell(
+                          day: day,
+                          lunar: lunar,
+                          isSpecial: isSpecial,
+                          textColor: isSpecial
+                              ? Colors.deepOrange
+                              : Colors.white,
+                          backgroundColor: Colors.red.withOpacity(0.2),
+                          lessonCount: _lessons['${day.day.toString().padLeft(2, '0')}/${day.month.toString().padLeft(2, '0')}/${day.year}']?.length,
+                        );
+                      },
+
+                      todayBuilder: (context, day, focusedDay) {
+                        final lunar = convertToLunar(day);
+                        final isSpecial = isSpecialLunarDay(lunar);
+
+                        return _buildDayCell(
+                          day: day,
+                          lunar: lunar,
+                          isSpecial: isSpecial,
+                          backgroundColor: Colors.blue.withOpacity(0.3),
+                          lessonCount: _lessons['${day.day.toString().padLeft(2, '0')}/${day.month.toString().padLeft(2, '0')}/${day.year}']?.length,
+                        );
+                      },
+
+                      // ✅ Thêm outsideBuilder để hiển thị ngày âm cho ngày mờ
+                      outsideBuilder: (context, day, focusedDay) {
+                        final lunar = convertToLunar(day);
+                        final isSpecial = isSpecialLunarDay(lunar);
+
+                        return _buildDayCell(
+                          day: day,
+                          lunar: lunar,
+                          isSpecial: isSpecial,
+                          textColor: const Color.fromARGB(255, 195, 195, 195),
+                          lunarColor: const Color.fromARGB(255, 191, 191, 191),
+                          lessonCount: _lessons['${day.day.toString().padLeft(2, '0')}/${day.month.toString().padLeft(2, '0')}/${day.year}']?.length,
+                        );
+                      },
+                    ),
+                  ),
+
+                  SizedBox(height: 10),
+                  if (_lessons['${_selectedDay!.day.toString().padLeft(2, '0')}/${_selectedDay!.month.toString().padLeft(2, '0')}/${_selectedDay!.year}'] !=
+                      null)
+                    _buildCard(
+                      _lessons['${_selectedDay!.day.toString().padLeft(2, '0')}/${_selectedDay!.month.toString().padLeft(2, '0')}/${_selectedDay!.year}']!,
+                    )
+                  else
+                    glassCard(
+                      color: _isToDay(_focusedDay),
+                      child: const ListTile(
+                        title: Text(
+                          "Bạn không có lịch học...",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget glassCard({required Widget child, Color? color}) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
@@ -522,11 +824,25 @@ class _LichHocScreenState extends State<LichHocScreen> {
     return Row(
       children: [
         IconButton(
+          icon: Icon(
+            (_danhsach ? Icons.calendar_month : Icons.list),
+            color: Colors.white,
+          ),
+          tooltip: "Chuyển đổi giao diện",
+          onPressed: () => {
+            setState(() {
+              _danhsach = !_danhsach;
+            }),
+          },
+        ),
+        IconButton(
           icon: const Icon(Icons.refresh, color: Colors.white), // màu trắng
+          tooltip: "Làm mới lịch học",
           onPressed: _fetch,
         ),
         IconButton(
           icon: const Icon(Icons.logout, color: Colors.white), // màu trắng
+          tooltip: "Đăng xuất",
           onPressed: _logout,
         ),
       ],

@@ -32,6 +32,17 @@ class ApiService {
     }
     return fetchLichHoc(msv, pwd, false);
   }
+  static Map<String, List<BuoiHoc>> conv(List<BuoiHoc> list) {
+    final grouped = <String, List<BuoiHoc>>{};
+    for (var item in list) {
+      if(item.mocTG == null) continue; // Bỏ qua nếu không có tên học phần
+      if (grouped[item.mocTG] == null) {
+        grouped[item.mocTG??''] = [];
+      }
+      grouped[item.mocTG]!.add(item);
+    }
+    return grouped;
+  }
   static List<BuoiHoc> _parseJson(String jsonStr) {
     
     final data = json.decode(jsonStr);
@@ -42,4 +53,5 @@ class ApiService {
     // print(list);
     return list.map((e) => BuoiHoc.fromJson(e)).toList();
   }
+  
 }
