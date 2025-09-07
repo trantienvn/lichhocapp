@@ -32,7 +32,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   Map<String, List<BuoiHoc>> _lessons = {};
-  bool _danhsach = false;
+  bool _danhsach = true;
   bool _loading = true;
   bool _hasAnError = false;
   final _today = DateTime.now();
@@ -659,134 +659,159 @@ class _LichHocScreenState extends State<LichHocScreen> {
             onRefresh: _fetch,
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(12),
-              child: Column(
-                children: [
-                  TableCalendar(
-                    firstDay: DateTime.utc(2020, 1, 1),
-                    lastDay: DateTime.utc(2030, 12, 31),
-                    focusedDay: _focusedDay,
-                    rowHeight: 80,
-                    locale: 'vi_VN',
-                    selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                    onDaySelected: (selectedDay, focusedDay) {
-                      setState(() {
-                        _selectedDay = selectedDay;
-                        _focusedDay = focusedDay;
-                      });
-                    },
-                    calendarFormat: CalendarFormat.month,
-                    startingDayOfWeek: StartingDayOfWeek.monday,
-                    headerStyle: HeaderStyle(
-                      formatButtonVisible: false, // để thấy nút chọn
-                      formatButtonTextStyle: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      formatButtonDecoration: BoxDecoration(
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      titleCentered: true,
-                      leftChevronIcon: const Icon(
-                        Icons.chevron_left,
-                        color: Colors.white,
-                      ),
-                      rightChevronIcon: const Icon(
-                        Icons.chevron_right,
-                        color: Colors.white,
-                      ),
-                      titleTextStyle: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      titleTextFormatter: (date, locale) =>
-                          'Tháng ${date.month}, ${date.year}',
-                    ),
-                    daysOfWeekStyle: const DaysOfWeekStyle(
-                      weekdayStyle: TextStyle(color: Colors.white),
-                      weekendStyle: TextStyle(
-                        color: Color.fromARGB(255, 255, 74, 74),
-                      ),
-                    ),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 700),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TableCalendar(
+                        firstDay: DateTime.utc(2020, 1, 1),
+                        lastDay: DateTime.utc(2030, 12, 31),
+                        focusedDay: _focusedDay,
+                        rowHeight: 80,
+                        locale: 'vi_VN',
+                        selectedDayPredicate: (day) =>
+                            isSameDay(_selectedDay, day),
+                        onDaySelected: (selectedDay, focusedDay) {
+                          setState(() {
+                            _selectedDay = selectedDay;
+                            _focusedDay = focusedDay;
+                          });
+                        },
+                        calendarFormat: CalendarFormat.month,
+                        startingDayOfWeek: StartingDayOfWeek.monday,
+                        headerStyle: HeaderStyle(
+                          formatButtonVisible: false, // để thấy nút chọn
+                          formatButtonTextStyle: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          formatButtonDecoration: BoxDecoration(
+                            border: Border.all(color: Colors.white),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          titleCentered: true,
+                          leftChevronIcon: const Icon(
+                            Icons.chevron_left,
+                            color: Colors.white,
+                          ),
+                          rightChevronIcon: const Icon(
+                            Icons.chevron_right,
+                            color: Colors.white,
+                          ),
+                          titleTextStyle: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          titleTextFormatter: (date, locale) =>
+                              'Tháng ${date.month}, ${date.year}',
+                        ),
+                        daysOfWeekStyle: const DaysOfWeekStyle(
+                          weekdayStyle: TextStyle(color: Colors.white),
+                          weekendStyle: TextStyle(
+                            color: Color.fromARGB(255, 255, 74, 74),
+                          ),
+                        ),
 
-                    calendarBuilders: CalendarBuilders(
-                      defaultBuilder: (context, day, focusedDay) {
-                        final lunar = convertToLunar(day);
-                        final isSpecial = isSpecialLunarDay(lunar);
+                        calendarBuilders: CalendarBuilders(
+                          defaultBuilder: (context, day, focusedDay) {
+                            final lunar = convertToLunar(day);
+                            final isSpecial = isSpecialLunarDay(lunar);
 
-                        return _buildDayCell(
-                          day: day,
-                          lunar: lunar,
-                          isSpecial: isSpecial,
-                          textColor: Colors.white,
-                          lessonCount: _lessons['${day.day.toString().padLeft(2, '0')}/${day.month.toString().padLeft(2, '0')}/${day.year}']?.length
-                        );
-                      },
+                            return _buildDayCell(
+                              day: day,
+                              lunar: lunar,
+                              isSpecial: isSpecial,
+                              textColor: Colors.white,
+                              lessonCount:
+                                  _lessons['${day.day.toString().padLeft(2, '0')}/${day.month.toString().padLeft(2, '0')}/${day.year}']
+                                      ?.length,
+                            );
+                          },
 
-                      selectedBuilder: (context, day, focusedDay) {
-                        final lunar = convertToLunar(day);
-                        final isSpecial = isSpecialLunarDay(lunar);
+                          selectedBuilder: (context, day, focusedDay) {
+                            final lunar = convertToLunar(day);
+                            final isSpecial = isSpecialLunarDay(lunar);
 
-                        return _buildDayCell(
-                          day: day,
-                          lunar: lunar,
-                          isSpecial: isSpecial,
-                          textColor: isSpecial
-                              ? Colors.deepOrange
-                              : Colors.white,
-                          backgroundColor: Colors.red.withOpacity(0.2),
-                          lessonCount: _lessons['${day.day.toString().padLeft(2, '0')}/${day.month.toString().padLeft(2, '0')}/${day.year}']?.length,
-                        );
-                      },
+                            return _buildDayCell(
+                              day: day,
+                              lunar: lunar,
+                              isSpecial: isSpecial,
+                              textColor: isSpecial
+                                  ? Colors.deepOrange
+                                  : Colors.white,
+                              backgroundColor: const Color.fromARGB(255, 54, 127, 244).withOpacity(0.2),
+                              lessonCount:
+                                  _lessons['${day.day.toString().padLeft(2, '0')}/${day.month.toString().padLeft(2, '0')}/${day.year}']
+                                      ?.length,
+                            );
+                          },
 
-                      todayBuilder: (context, day, focusedDay) {
-                        final lunar = convertToLunar(day);
-                        final isSpecial = isSpecialLunarDay(lunar);
+                          todayBuilder: (context, day, focusedDay) {
+                            final lunar = convertToLunar(day);
+                            final isSpecial = isSpecialLunarDay(lunar);
 
-                        return _buildDayCell(
-                          day: day,
-                          lunar: lunar,
-                          isSpecial: isSpecial,
-                          backgroundColor: Colors.blue.withOpacity(0.3),
-                          lessonCount: _lessons['${day.day.toString().padLeft(2, '0')}/${day.month.toString().padLeft(2, '0')}/${day.year}']?.length,
-                        );
-                      },
+                            return _buildDayCell(
+                              day: day,
+                              lunar: lunar,
+                              isSpecial: isSpecial,
+                              backgroundColor: Colors.blue.withOpacity(0.3),
+                              lessonCount:
+                                  _lessons['${day.day.toString().padLeft(2, '0')}/${day.month.toString().padLeft(2, '0')}/${day.year}']
+                                      ?.length,
+                            );
+                          },
 
-                      // ✅ Thêm outsideBuilder để hiển thị ngày âm cho ngày mờ
-                      outsideBuilder: (context, day, focusedDay) {
-                        final lunar = convertToLunar(day);
-                        final isSpecial = isSpecialLunarDay(lunar);
+                          // ✅ Thêm outsideBuilder để hiển thị ngày âm cho ngày mờ
+                          outsideBuilder: (context, day, focusedDay) {
+                            final lunar = convertToLunar(day);
+                            final isSpecial = isSpecialLunarDay(lunar);
 
-                        return _buildDayCell(
-                          day: day,
-                          lunar: lunar,
-                          isSpecial: isSpecial,
-                          textColor: const Color.fromARGB(255, 195, 195, 195),
-                          lunarColor: const Color.fromARGB(255, 191, 191, 191),
-                          lessonCount: _lessons['${day.day.toString().padLeft(2, '0')}/${day.month.toString().padLeft(2, '0')}/${day.year}']?.length,
-                        );
-                      },
-                    ),
-                  ),
-
-                  SizedBox(height: 10),
-                  if (_lessons['${_selectedDay!.day.toString().padLeft(2, '0')}/${_selectedDay!.month.toString().padLeft(2, '0')}/${_selectedDay!.year}'] !=
-                      null)
-                    _buildCard(
-                      _lessons['${_selectedDay!.day.toString().padLeft(2, '0')}/${_selectedDay!.month.toString().padLeft(2, '0')}/${_selectedDay!.year}']!,
-                    )
-                  else
-                    glassCard(
-                      color: _isToDay(_focusedDay),
-                      child: const ListTile(
-                        title: Text(
-                          "Bạn không có lịch học...",
-                          style: TextStyle(color: Colors.white),
+                            return _buildDayCell(
+                              day: day,
+                              lunar: lunar,
+                              isSpecial: isSpecial,
+                              textColor: const Color.fromARGB(
+                                255,
+                                195,
+                                195,
+                                195,
+                              ),
+                              lunarColor: const Color.fromARGB(
+                                255,
+                                191,
+                                191,
+                                191,
+                              ),
+                              lessonCount:
+                                  _lessons['${day.day.toString().padLeft(2, '0')}/${day.month.toString().padLeft(2, '0')}/${day.year}']
+                                      ?.length,
+                            );
+                          },
                         ),
                       ),
-                    ),
-                ],
+
+                      SizedBox(height: 10),
+                      if (_lessons['${_selectedDay!.day.toString().padLeft(2, '0')}/${_selectedDay!.month.toString().padLeft(2, '0')}/${_selectedDay!.year}'] !=
+                          null)
+                        _buildCard(
+                          _lessons['${_selectedDay!.day.toString().padLeft(2, '0')}/${_selectedDay!.month.toString().padLeft(2, '0')}/${_selectedDay!.year}']!,
+                        )
+                      else
+                        glassCard(
+                          color: _isToDay(_focusedDay),
+                          child: const ListTile(
+                            title: Text(
+                              "Bạn không có lịch học...",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),

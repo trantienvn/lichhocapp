@@ -38,5 +38,10 @@ class CacheService {
     html.window.localStorage.remove(username);
     html.window.localStorage.remove("$username.old");
   }
-  
+  static Future<String?> readOldJson(String username) async {
+    // return html.window.localStorage["$username.old"];
+    final old = html.window.localStorage["$username.old"];
+    if (old == null || old.isEmpty) return html.window.localStorage[username];
+    return null;
+  }
 }
