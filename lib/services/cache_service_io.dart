@@ -41,7 +41,7 @@ class CacheService {
       final timestamp = DateTime.tryParse(jsonMap['timestamp']);
       if (timestamp == null) return null;
 
-      final now = DateTime.now();
+      // final now = DateTime.now();
       // if (now.difference(timestamp).inHours < 24) {
         return jsonMap['data'];
       // } else {

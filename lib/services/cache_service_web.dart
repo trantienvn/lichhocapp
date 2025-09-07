@@ -21,8 +21,8 @@ class CacheService {
       final timestamp = DateTime.tryParse(parsed['timestamp']);
       if (timestamp == null) return null;
 
-      final now = DateTime.now();
-      final diff = now.difference(timestamp);
+      // final now = DateTime.now();
+      // final diff = now.difference(timestamp);
       // if (diff.inHours < 24) {
         return parsed['data'];
       // } else {
@@ -38,9 +38,5 @@ class CacheService {
     html.window.localStorage.remove(username);
     html.window.localStorage.remove("$username.old");
   }
-  static Future<String?> readOldJson(String username) async {
-    // return html.window.localStorage["$username.old"];
-    final old = html.window.localStorage["$username.old"];
-    if (old == null || old.isEmpty) return html.window.localStorage[username];
-  }
+  
 }
