@@ -9,7 +9,7 @@ import '../services/api_service.dart';
 import 'login_screen.dart';
 import '../lunar_converter.dart';
 import 'package:url_launcher/url_launcher.dart';
-// import 'dart:html' as html;
+import 'dart:html' as html;
 import 'package:flutter/gestures.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -42,13 +42,14 @@ class _LichHocScreenState extends State<LichHocScreen> {
   void initState() {
     super.initState();
     _selectedDay = DateTime.now();
-    // html.document.title = "Lịch Học";
+    html.document.title = "Lịch Học";
     _loadFirst();
   }
 
   Future<void> _loadFirst() async {
     setState(() => _loading = true);
     final prefs = await SharedPreferences.getInstance();
+    _danhsach = prefs.getBool('lich_danhsach') ?? true;
     final msv = prefs.getString('msv') ?? '';
     final pwd = prefs.getString('pwd') ?? '';
     try {
@@ -854,10 +855,12 @@ class _LichHocScreenState extends State<LichHocScreen> {
             color: Colors.white,
           ),
           tooltip: "Chuyển đổi giao diện",
-          onPressed: () => {
+          onPressed: () async {
+            final prefs = await SharedPreferences.getInstance();
             setState(() {
               _danhsach = !_danhsach;
-            }),
+              prefs.setBool('lich_danhsach', _danhsach);
+            });
           },
         ),
         IconButton(
