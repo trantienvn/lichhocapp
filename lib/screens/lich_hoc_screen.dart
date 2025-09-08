@@ -180,7 +180,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
       );
     }
     if (!_danhsach) {
-      return RenderLichThang();
+      return renderLichThang();
     }
     bool started = false;
     bool haveLesson = false;
@@ -523,7 +523,9 @@ class _LichHocScreenState extends State<LichHocScreen> {
     int? lessonCount = 0,
   }) {
     return SizedBox(
-      width: 60, // 👈 tăng kích thước
+      width: MediaQuery.of(context).size.width < 600
+          ? 60
+          : 95, // 👈 tăng kích thước
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: BackdropFilter(
@@ -581,56 +583,58 @@ class _LichHocScreenState extends State<LichHocScreen> {
   }
 
   Widget _buildCard(List<BuoiHoc> lessons) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: lessons.map((lesson) {
-        return glassCard(
-          color: _isToDay(_focusedDay),
-          child: ListTile(
-            title: Text(
-              lesson.tenHP ?? '',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: lessons.map((lesson) {
+          return glassCard(
+            color: _isToDay(_focusedDay),
+            child: ListTile(
+              title: Text(
+                lesson.tenHP ?? '',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    lesson.thoiGian ?? '',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  Text(
+                    "Giảng viên: ${lesson.giangVien}",
+                    style: const TextStyle(color: Colors.white70),
+                  ),
+                  if ((lesson.meet ?? "").length > 8)
+                    Text.rich(
+                      TextSpan(
+                        text: "Meet: ${lesson.meet}",
+                        style: const TextStyle(color: Colors.white70),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () => _launchUrl(lesson.meet ?? ''),
+                      ),
+                    ),
+                  Text(
+                    "Tiết: ${lesson.tietHoc}",
+                    style: const TextStyle(color: Colors.white70),
+                  ),
+                  Text(
+                    "Phòng: ${RegExp(r'<[^>]+>').hasMatch(lesson.diaDiem ?? '') ? "Online" : lesson.diaDiem}",
+                    style: const TextStyle(color: Colors.white70),
+                  ),
+                ],
               ),
             ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  lesson.thoiGian ?? '',
-                  style: const TextStyle(color: Colors.white),
-                ),
-                Text(
-                  "Giảng viên: ${lesson.giangVien}",
-                  style: const TextStyle(color: Colors.white70),
-                ),
-                if ((lesson.meet ?? "").length > 8)
-                  Text.rich(
-                    TextSpan(
-                      text: "Meet: ${lesson.meet}",
-                      style: const TextStyle(color: Colors.white70),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () => _launchUrl(lesson.meet ?? ''),
-                    ),
-                  ),
-                Text(
-                  "Tiết: ${lesson.tietHoc}",
-                  style: const TextStyle(color: Colors.white70),
-                ),
-                Text(
-                  "Phòng: ${RegExp(r'<[^>]+>').hasMatch(lesson.diaDiem ?? '') ? "Online" : lesson.diaDiem}",
-                  style: const TextStyle(color: Colors.white70),
-                ),
-              ],
-            ),
-          ),
-        );
-      }).toList(),
+          );
+        }).toList(),
+      ),
     );
   }
 
-  Widget RenderLichThang() {
+  Widget renderLichThang() {
     return Scaffold(
       appBar: _appBarTitle(),
       body: Stack(
@@ -743,7 +747,12 @@ class _LichHocScreenState extends State<LichHocScreen> {
                               textColor: isSpecial
                                   ? Colors.deepOrange
                                   : Colors.white,
-                              backgroundColor: const Color.fromARGB(255, 54, 127, 244).withOpacity(0.2),
+                              backgroundColor: const Color.fromARGB(
+                                255,
+                                54,
+                                127,
+                                244,
+                              ).withOpacity(0.2),
                               lessonCount:
                                   _lessons['${day.day.toString().padLeft(2, '0')}/${day.month.toString().padLeft(2, '0')}/${day.year}']
                                       ?.length,
