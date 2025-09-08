@@ -5,7 +5,7 @@ import 'cache_service.dart';
 
 class ApiService {
   static Future<List<BuoiHoc>> fetchLichHoc(String msv, String pwd, bool? reload) async {
-    final url = Uri.parse('https://trantienvn.onrender.com/lichhoc?msv=$msv&pwd=$pwd');
+    final url = Uri.parse('https://trantien.id.vn/lichhoc/api/v2/?username=$msv&password=$pwd');
     // final cachedJson = await CacheService.readJson(msv);
     // if (cachedJson != null && !reload!) {
     //   return _parseJson(cachedJson);

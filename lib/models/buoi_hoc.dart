@@ -9,7 +9,7 @@ class BuoiHoc {
   final String? thoiGian;
   final String? diaDiem;
   final String? tuan;
-
+  final int? buoiSo;
   BuoiHoc({
     required this.tu,
     required this.den,
@@ -21,6 +21,7 @@ class BuoiHoc {
     this.thoiGian,
     this.diaDiem,
     this.tuan,
+    this.buoiSo,
   });
 
   factory BuoiHoc.fromJson(Map<String, dynamic> json) => BuoiHoc(
@@ -34,5 +35,6 @@ class BuoiHoc {
         thoiGian: json['ThoiGian'],
         diaDiem: json['DiaDiem'],
         tuan: json['Tuan'],
+        buoiSo: json['BuoiSo']?? 0,
       );
 }

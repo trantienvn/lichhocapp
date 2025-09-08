@@ -160,7 +160,29 @@ class _LichHocScreenState extends State<LichHocScreen> {
     if (_hasAnError) {
       return Scaffold(
         appBar: _appBarTitle(),
-        body: Center(
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Hình nền
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/lqglss.jpg"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+
+            // Lớp blur (liquid glass)
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+              child: Container(
+                color: Colors.black.withOpacity(0.2), // thêm overlay nhẹ
+              ),
+            ),
+
+            // Nội dung chính (loading spinner)
+            Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -176,6 +198,8 @@ class _LichHocScreenState extends State<LichHocScreen> {
               ),
             ],
           ),
+        ),
+          ],
         ),
       );
     }
@@ -356,6 +380,12 @@ class _LichHocScreenState extends State<LichHocScreen> {
                                         ),
                                         Text(
                                           "Phòng: ${RegExp(r'<[^>]+>').hasMatch(lesson.diaDiem) ? "Online" : lesson.diaDiem}",
+                                          style: const TextStyle(
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                        Text(
+                                          "Buổi số: ${lesson.buoiSo}",
                                           style: const TextStyle(
                                             color: Colors.white70,
                                           ),
@@ -588,7 +618,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: lessons.map((lesson) {
           return glassCard(
-            color: _isToDay(_focusedDay),
+            color: _isToDay(_selectedDay??_focusedDay),
             child: ListTile(
               title: Text(
                 lesson.tenHP ?? '',
@@ -624,6 +654,12 @@ class _LichHocScreenState extends State<LichHocScreen> {
                   Text(
                     "Phòng: ${RegExp(r'<[^>]+>').hasMatch(lesson.diaDiem ?? '') ? "Online" : lesson.diaDiem}",
                     style: const TextStyle(color: Colors.white70),
+                  ),
+                  Text(
+                    "Buổi số: ${lesson.buoiSo}",
+                    style: const TextStyle(
+                      color: Colors.white70,
+                    ),
                   ),
                 ],
               ),
@@ -747,12 +783,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
                               textColor: isSpecial
                                   ? Colors.deepOrange
                                   : Colors.white,
-                              backgroundColor: const Color.fromARGB(
-                                255,
-                                54,
-                                127,
-                                244,
-                              ).withOpacity(0.2),
+                              backgroundColor: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.3),
                               lessonCount:
                                   _lessons['${day.day.toString().padLeft(2, '0')}/${day.month.toString().padLeft(2, '0')}/${day.year}']
                                       ?.length,
@@ -767,7 +798,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
                               day: day,
                               lunar: lunar,
                               isSpecial: isSpecial,
-                              backgroundColor: Colors.blue.withOpacity(0.3),
+                              backgroundColor: const Color.fromARGB(255, 0, 255, 225).withOpacity(0.3),
                               lessonCount:
                                   _lessons['${day.day.toString().padLeft(2, '0')}/${day.month.toString().padLeft(2, '0')}/${day.year}']
                                       ?.length,
