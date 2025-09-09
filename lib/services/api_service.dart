@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/buoi_hoc.dart';
 import 'cache_service.dart';
 
 class ApiService {
+  
   static Future<List<BuoiHoc>> fetchLichHoc(String msv, String pwd, bool? reload) async {
-    final url = Uri.parse('https://trantien.id.vn/lichhoc/api/v2/?username=$msv&password=$pwd');
+    final url = Uri.parse(await getUrl(msv, pwd));
     // final cachedJson = await CacheService.readJson(msv);
     // if (cachedJson != null && !reload!) {
     //   return _parseJson(cachedJson);
@@ -42,6 +44,18 @@ class ApiService {
       grouped[item.mocTG]!.add(item);
     }
     return grouped;
+  }
+  static Future<String> getUrl(String msv, String pwd) async{
+    final pref = await SharedPreferences.getInstance();
+    final university = pref.getString('university') ?? 'DTC';
+    switch (university) {
+      case 'DTC':
+        return 'https://trantien.id.vn/lichhoc/api/v2/?username=$msv&password=$pwd';
+      case 'DTZ':
+        return 'https://trantien.id.vn/lichhoc/api/tnus/?username=$msv&password=$pwd';
+      default:
+        return 'https://trantien.id.vn/lichhoc/api/v2/?username=$msv&password=$pwd';
+    }
   }
   static List<BuoiHoc> _parseJson(String jsonStr) {
     

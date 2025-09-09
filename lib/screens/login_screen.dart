@@ -22,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (msv.isEmpty || pwd.isEmpty) return;
     await prefs.setString('msv', msv);
     await prefs.setString('pwd', pwd);
+    await prefs.setString('university', msv.substring(0, 3).toUpperCase());
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => const LichHocScreen()),

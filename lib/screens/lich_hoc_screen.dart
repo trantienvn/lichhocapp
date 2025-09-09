@@ -13,13 +13,6 @@ import 'dart:html' as html;
 import 'package:flutter/gestures.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-void _launchUrl(String url) async {
-  Uri uri = Uri.parse(url);
-  if (!await launchUrl(uri)) {
-    throw 'Could not launch $url';
-  }
-}
-
 class LichHocScreen extends StatefulWidget {
   const LichHocScreen({super.key});
 
@@ -35,6 +28,9 @@ class _LichHocScreenState extends State<LichHocScreen> {
   bool _danhsach = true;
   bool _loading = true;
   bool _hasAnError = false;
+  String loaitruong = '';
+  String nhan = '';
+
   final _today = DateTime.now();
   final _daysOfWeek = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
 
@@ -50,6 +46,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
     setState(() => _loading = true);
     final prefs = await SharedPreferences.getInstance();
     _danhsach = prefs.getBool('lich_danhsach') ?? true;
+    loaitruong = prefs.getString('university') ?? 'DTC';
     final msv = prefs.getString('msv') ?? '';
     final pwd = prefs.getString('pwd') ?? '';
     try {
@@ -67,9 +64,25 @@ class _LichHocScreenState extends State<LichHocScreen> {
     }
   }
 
+  void _launchUrl(String url) async {
+    switch (loaitruong) {
+      case "DTC":
+        break;
+      case "DTZ":
+        url = "tel:$url";
+        break;
+      default:
+    }
+    Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri)) {
+      throw 'Could not launch $url';
+    }
+  }
+
   Future<void> _fetch() async {
     setState(() => _loading = true);
     final prefs = await SharedPreferences.getInstance();
+    loaitruong = prefs.getString('university') ?? 'DTC';
     final msv = prefs.getString('msv') ?? '';
     final pwd = prefs.getString('pwd') ?? '';
     try {
@@ -121,6 +134,16 @@ class _LichHocScreenState extends State<LichHocScreen> {
 
   @override
   Widget build(BuildContext context) {
+    switch (loaitruong) {
+      case "DTC":
+        nhan = "Meet";
+        break;
+      case "DTZ":
+        nhan = "SĐT";
+        break;
+      default:
+        nhan = "Meet";
+    }
     if (_loading) {
       return Scaffold(
         appBar: _appBarTitle(),
@@ -183,22 +206,22 @@ class _LichHocScreenState extends State<LichHocScreen> {
 
             // Nội dung chính (loading spinner)
             Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset("assets/oops.png", height: 120),
-              const SizedBox(height: 20),
-              const Text(
-                "Aww. Có lỗi xảy ra khi tải lịch học!",
-                style: TextStyle(fontSize: 18, color: Colors.red),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset("assets/oops.png", height: 120),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Aww. Có lỗi xảy ra khi tải lịch học!",
+                    style: TextStyle(fontSize: 18, color: Colors.red),
+                  ),
+                  ElevatedButton(
+                    onPressed: _logout,
+                    child: const Text("Đăng Nhập Lại"),
+                  ),
+                ],
               ),
-              ElevatedButton(
-                onPressed: _logout,
-                child: const Text("Đăng Nhập Lại"),
-              ),
-            ],
-          ),
-        ),
+            ),
           ],
         ),
       );
@@ -216,49 +239,52 @@ class _LichHocScreenState extends State<LichHocScreen> {
       content.add(
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _daysOfWeek[_today.weekday - 1],
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Text(
-                    DateFormat('dd/MM').format(_today),
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                  _amLich(_today),
-                ],
-              ),
-              Expanded(
-                child: glassCard(
-                  color: _isToDay(_today),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-
-                    children: [
-                      SpinKitPouringHourGlassRefined(color: Colors.white),
-                      Text(
-                        "Lịch học sẽ bắt đầu sau ${numberOfDays + 1} ngày",
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.white,
-                        ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 600), // s
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _daysOfWeek[_today.weekday - 1],
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
                       ),
-                    ],
+                    ),
+                    Text(
+                      DateFormat('dd/MM').format(_today),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                    _amLich(_today),
+                  ],
+                ),
+                Expanded(
+                  child: glassCard(
+                    color: _isToDay(_today),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+                      children: [
+                        SpinKitPouringHourGlassRefined(color: Colors.white),
+                        Text(
+                          "Lịch học sẽ bắt đầu sau ${numberOfDays + 1} ngày",
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );
@@ -294,6 +320,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
         while (isSameOrBefore(curr, end)) {
           final formatted = DateFormat('dd/MM/yyyy').format(curr);
           final dayIndex = curr.weekday;
+
           List lessons = _lich.where((l) => l.mocTG == formatted).toList();
 
           bool found = lessons.isNotEmpty;
@@ -354,6 +381,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
                                             color: Colors.white,
                                           ),
                                         ),
+
                                         Text(
                                           "Giảng viên: ${lesson.giangVien}",
                                           style: const TextStyle(
@@ -363,7 +391,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
                                         if (lesson.meet.length > 8)
                                           Text.rich(
                                             TextSpan(
-                                              text: "Meet: ${lesson.meet}",
+                                              text: "${nhan}: ${lesson.meet}",
                                               style: const TextStyle(
                                                 color: Colors.white70,
                                               ),
@@ -618,7 +646,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: lessons.map((lesson) {
           return glassCard(
-            color: _isToDay(_selectedDay??_focusedDay),
+            color: _isToDay(_selectedDay ?? _focusedDay),
             child: ListTile(
               title: Text(
                 lesson.tenHP ?? '',
@@ -641,7 +669,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
                   if ((lesson.meet ?? "").length > 8)
                     Text.rich(
                       TextSpan(
-                        text: "Meet: ${lesson.meet}",
+                        text: "$nhan: ${lesson.meet}",
                         style: const TextStyle(color: Colors.white70),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () => _launchUrl(lesson.meet ?? ''),
@@ -657,9 +685,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
                   ),
                   Text(
                     "Buổi số: ${lesson.buoiSo}",
-                    style: const TextStyle(
-                      color: Colors.white70,
-                    ),
+                    style: const TextStyle(color: Colors.white70),
                   ),
                 ],
               ),
@@ -783,7 +809,12 @@ class _LichHocScreenState extends State<LichHocScreen> {
                               textColor: isSpecial
                                   ? Colors.deepOrange
                                   : Colors.white,
-                              backgroundColor: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.3),
+                              backgroundColor: const Color.fromARGB(
+                                255,
+                                255,
+                                255,
+                                255,
+                              ).withOpacity(0.3),
                               lessonCount:
                                   _lessons['${day.day.toString().padLeft(2, '0')}/${day.month.toString().padLeft(2, '0')}/${day.year}']
                                       ?.length,
@@ -798,7 +829,12 @@ class _LichHocScreenState extends State<LichHocScreen> {
                               day: day,
                               lunar: lunar,
                               isSpecial: isSpecial,
-                              backgroundColor: const Color.fromARGB(255, 0, 255, 225).withOpacity(0.3),
+                              backgroundColor: const Color.fromARGB(
+                                255,
+                                0,
+                                255,
+                                225,
+                              ).withOpacity(0.3),
                               lessonCount:
                                   _lessons['${day.day.toString().padLeft(2, '0')}/${day.month.toString().padLeft(2, '0')}/${day.year}']
                                       ?.length,

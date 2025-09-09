@@ -34,7 +34,6 @@ migrate_working_dir/
 /build/
 web.bat
 webgit.bat
-web-build.bat
 
 # Symbolication related
 app.*.symbols
