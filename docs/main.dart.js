@@ -83316,7 +83316,7 @@ if(s==null)s=""
 r=i.h(a,"Ngay")
 q=i.h(a,"TietHoc")
 p=A.k(i.h(a,"TenHP"))
-o=A.k(i.h(a,"MaHP"))
+o=i.h(a,"MaHP")!=null?"("+A.k(i.h(a,"MaHP"))+")":""
 n=i.h(a,"GiangVien")
 m=i.h(a,"Meet")
 if(m==null)m=i.h(a,"SDT")
@@ -83326,7 +83326,7 @@ k=i.h(a,"DiaDiem")
 j=i.h(a,"Tuan")
 i=i.h(a,"BuoiSo")
 if(i==null)i=0
-return new A.hE(h,s,r,q,p+" ("+o+")",n,m,l,k,j,i)},
+return new A.hE(h,s,r,q,p+" "+o,n,m,l,k,j,i)},
 $S:525}
 A.xV.prototype={
 b8(a){var s,r,q=this.x,p=q.h(0,a)

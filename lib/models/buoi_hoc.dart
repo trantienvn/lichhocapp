@@ -29,7 +29,7 @@ class BuoiHoc {
         den: json['Den'] ?? '',
         mocTG: json['Ngay'],
         tietHoc: json['TietHoc'],
-        tenHP: "${json['TenHP']} (${json['MaHP']})",
+        tenHP: "${json['TenHP']} ${json['MaHP']!=null?"(${json['MaHP']})":""}",
         giangVien: json['GiangVien'],
         meet: json['Meet'] ?? json['SDT'],
         thoiGian: json['ThoiGian'] ?? '',
