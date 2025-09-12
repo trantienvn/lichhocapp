@@ -4,7 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:lichhocapp/services/cache_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import '../component/button.dart';
 import '../models/buoi_hoc.dart';
+import '../models/mon_thi.dart';
 import '../services/api_service.dart';
 import 'login_screen.dart';
 import '../lunar_converter.dart';
@@ -12,6 +14,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:html' as html;
 import 'package:flutter/gestures.dart';
 import 'package:table_calendar/table_calendar.dart';
+import '../component/dialog.dart';
 
 class LichHocScreen extends StatefulWidget {
   const LichHocScreen({super.key});
@@ -30,6 +33,8 @@ class _LichHocScreenState extends State<LichHocScreen> {
   bool _hasAnError = false;
   String loaitruong = '';
   String nhan = '';
+  String StudentID = '';
+  String fullName = '';
 
   final _today = DateTime.now();
   final _daysOfWeek = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
@@ -49,6 +54,10 @@ class _LichHocScreenState extends State<LichHocScreen> {
     loaitruong = prefs.getString('university') ?? 'DTC';
     final msv = prefs.getString('msv') ?? '';
     final pwd = prefs.getString('pwd') ?? '';
+    _checkLichThi();
+    StudentID = msv.toUpperCase();
+    fullName = prefs.getString('name') ?? '';
+    showFirstTimeDialog();
     try {
       final result = await ApiService.getLichHocFromCache(msv, pwd);
       setState(() {
@@ -84,6 +93,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
     final prefs = await SharedPreferences.getInstance();
     loaitruong = prefs.getString('university') ?? 'DTC';
     final msv = prefs.getString('msv') ?? '';
+    StudentID = msv.toUpperCase();
     final pwd = prefs.getString('pwd') ?? '';
     try {
       final result = await ApiService.fetchLichHoc(msv, pwd, true);
@@ -215,9 +225,15 @@ class _LichHocScreenState extends State<LichHocScreen> {
                     "Aww. Có lỗi xảy ra khi tải lịch học!",
                     style: TextStyle(fontSize: 18, color: Colors.red),
                   ),
-                  ElevatedButton(
-                    onPressed: _logout,
-                    child: const Text("Đăng Nhập Lại"),
+                  GlassmorphismButton(
+                    onPressed: () => _logout(),
+                    child: const Text(
+                      "Đăng nhập lại",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -897,6 +913,166 @@ class _LichHocScreenState extends State<LichHocScreen> {
     );
   }
 
+  void showFirstTimeDialog() async {
+    final prefs = await SharedPreferences.getInstance();
+    final hasShownDialog = prefs.getBool('hasShownFirstTimeDialog') ?? false;
+    if (hasShownDialog) return;
+    showDialog(
+      context: this.context,
+      builder: (BuildContext context) {
+        return LiquidGlassDialog(
+          maxWidth: 650,
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "Xin chào!",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  "Chào mừng bạn đến với ứng dụng Lịch Học Sinh Viên được phát triển bởi Trần Tiến!",
+                  style: TextStyle(color: Colors.white70, fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                // Add other widgets like buttons here
+                const Text(
+                  "Bạn có thể xem lịch học của mình theo tháng hoặc danh sách.\n Sử dụng biểu tượng lịch ở góc trên bên phải để chuyển đổi giữa các chế độ xem.",
+                  style: TextStyle(color: Colors.white70, fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                GlassmorphismButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text(
+                    "Đóng",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    prefs.setBool('hasShownFirstTimeDialog', true);
+  }
+
+  List<MonThi> _lichThi = [];
+  void _checkLichThi() async {
+    final prefs = await SharedPreferences.getInstance();
+    final msv = prefs.getString('msv') ?? '';
+    final pwd = prefs.getString('pwd') ?? '';
+    _lichThi = await ApiService.fetchLichThi(msv, pwd);
+    if (_lichThi.length > 0) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return LiquidGlassDialog(
+            maxWidth: 650,
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Bạn có ${_lichThi.length} môn thi sắp tới",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Expanded(
+                    // Thêm Expanded để SingleChildScrollView chiếm không gian còn lại
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: _lichThi
+                            .map(
+                              (mon) => glassCard(
+                                child: ListTile(
+                                  title: Text(
+                                    mon.tenHP,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Mã HP: ${mon.maHP}",
+                                        style: TextStyle(color: Colors.white70),
+                                      ),
+                                      Text(
+                                        "Ngày Thi: ${mon.ngayThi} - Ca: ${mon.caThi}",
+                                        style: TextStyle(color: Colors.white70),
+                                      ),
+                                      Text(
+                                        "Hình Thức: ${mon.hinhThucThi}",
+                                        style: TextStyle(color: Colors.white70),
+                                      ),
+                                      Text(
+                                        "Phòng Thi: ${mon.phongThi}",
+                                        style: TextStyle(color: Colors.white70),
+                                      ),
+                                      if (mon.soBaoDanh.isNotEmpty)
+                                        Text(
+                                          "Số Báo Danh: ${mon.soBaoDanh}",
+                                          style: TextStyle(
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                      if (mon.ghiChu.isNotEmpty)
+                                        Text(
+                                          "Ghi Chú: ${mon.ghiChu}",
+                                          style: TextStyle(
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  GlassmorphismButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text(
+                      "Đóng",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    }
+    return;
+  }
+
   Widget glassCard({required Widget child, Color? color}) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
@@ -960,33 +1136,44 @@ class _LichHocScreenState extends State<LichHocScreen> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // hình nền cho AppBar
-            Image.asset("assets/lqglss.jpg", fit: BoxFit.fitWidth),
-            // hiệu ứng kính mờ
+            Image.asset("assets/lqglss.jpg", fit: BoxFit.cover),
             BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
               child: Container(
-                color: Colors.black.withOpacity(0.3), // overlay để chữ dễ đọc
+                color: Colors.black.withOpacity(
+                  0.3,
+                ), // Overlay for better readability
               ),
             ),
-            // AppBar thật
+            // Actual AppBar
             AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0,
-              title: const Text(
-                "Lịch học",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  shadows: [
-                    Shadow(
-                      blurRadius: 8,
-                      color: Colors.black26,
-                      offset: Offset(1, 1),
+              title: Column(
+                // Use a Column to stack the title, name, and ID
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    fullName,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 8,
+                          color: Colors.black26,
+                          offset: Offset(1, 1),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  Text(
+                    StudentID, // User ID
+                    style: const TextStyle(fontSize: 14, color: Colors.white60),
+                  ),
+                ],
               ),
               actions: [_buildActions()],
             ),

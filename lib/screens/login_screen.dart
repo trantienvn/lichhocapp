@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../component/button.dart';
 import 'lich_hoc_screen.dart';
 import 'dart:html' as html;
 
@@ -95,10 +96,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                             labelText: "Mã sinh viên",
-                            labelStyle:
-                                const TextStyle(color: Colors.white70),
-                            prefixIcon: const Icon(Icons.person,
-                                color: Colors.white),
+                            labelStyle: const TextStyle(color: Colors.white70),
+                            prefixIcon: const Icon(
+                              Icons.person,
+                              color: Colors.white,
+                            ),
                             filled: true,
                             fillColor: Colors.white.withOpacity(0.1),
                             border: OutlineInputBorder(
@@ -120,10 +122,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                             labelText: "Mật khẩu",
-                            labelStyle:
-                                const TextStyle(color: Colors.white70),
-                            prefixIcon: const Icon(Icons.lock,
-                                color: Colors.white),
+                            labelStyle: const TextStyle(color: Colors.white70),
+                            prefixIcon: const Icon(
+                              Icons.lock,
+                              color: Colors.white,
+                            ),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _obscurePwd
@@ -152,21 +155,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       // Nút đăng nhập
                       SizedBox(
                         width: 200,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blueAccent,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: ()=>_login(context),
+                        child: GlassmorphismButton(
+                          onPressed: () => _login(context),
                           child: const Text(
                             "Đăng Nhập",
                             style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
                               color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
