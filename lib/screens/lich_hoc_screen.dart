@@ -115,6 +115,11 @@ class _LichHocScreenState extends State<LichHocScreen> {
     await prefs.remove('msv');
     await prefs.remove('pwd');
     await prefs.remove('isFirstTime');
+    await prefs.remove('name');
+    await prefs.remove('university');
+    await prefs.remove('lich_danhsach');
+    await prefs.remove('hasShownFirstTimeDialog');
+    prefs.clear();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -974,6 +979,11 @@ class _LichHocScreenState extends State<LichHocScreen> {
     final msv = prefs.getString('msv') ?? '';
     final pwd = prefs.getString('pwd') ?? '';
     _lichThi = await ApiService.fetchLichThi(msv, pwd);
+    fullName = prefs.getString('name') ?? '';
+    setState(() {
+      fullName = fullName;
+      StudentID = msv.toUpperCase();
+    });
     if (_lichThi.length > 0) {
       showDialog(
         context: context,
@@ -995,7 +1005,6 @@ class _LichHocScreenState extends State<LichHocScreen> {
                   ),
                   SizedBox(height: 10),
                   Expanded(
-                    // Thêm Expanded để SingleChildScrollView chiếm không gian còn lại
                     child: SingleChildScrollView(
                       child: Column(
                         children: _lichThi
@@ -1149,6 +1158,7 @@ class _LichHocScreenState extends State<LichHocScreen> {
             AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0,
+              centerTitle: false,
               title: Column(
                 // Use a Column to stack the title, name, and ID
                 mainAxisAlignment: MainAxisAlignment.center,

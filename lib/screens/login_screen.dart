@@ -14,7 +14,18 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _msvController = TextEditingController();
   final TextEditingController _pwdController = TextEditingController();
+  final FocusNode _msvFocusNode = FocusNode();
+  final FocusNode _pwdFocusNode = FocusNode();
   bool _obscurePwd = true;
+
+  @override
+  void dispose() {
+    _msvController.dispose();
+    _pwdController.dispose();
+    _msvFocusNode.dispose();
+    _pwdFocusNode.dispose();
+    super.dispose();
+  }
 
   void _login(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
@@ -37,7 +48,6 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Ảnh nền
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -46,7 +56,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          // Overlay màu
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -59,7 +68,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          // Nội dung login
           Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(20),
@@ -86,12 +94,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 24),
-
-                      // Ô nhập MSV
                       SizedBox(
                         width: 350,
                         child: TextFormField(
                           controller: _msvController,
+                          focusNode: _msvFocusNode,
                           autofillHints: const [AutofillHints.username],
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
@@ -108,15 +115,17 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderSide: BorderSide.none,
                             ),
                           ),
+                          onFieldSubmitted: (_) {
+                            FocusScope.of(context).requestFocus(_pwdFocusNode);
+                          },
                         ),
                       ),
                       const SizedBox(height: 16),
-
-                      // Ô nhập mật khẩu
                       SizedBox(
                         width: 350,
                         child: TextFormField(
                           controller: _pwdController,
+                          focusNode: _pwdFocusNode,
                           autofillHints: const [AutofillHints.password],
                           obscureText: _obscurePwd,
                           style: const TextStyle(color: Colors.white),
@@ -147,12 +156,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderSide: BorderSide.none,
                             ),
                           ),
+                          onFieldSubmitted: (_) {
+                            _login(context);
+                          },
                         ),
                       ),
-
                       const SizedBox(height: 30),
-
-                      // Nút đăng nhập
                       SizedBox(
                         width: 200,
                         child: GlassmorphismButton(
@@ -177,3 +186,4 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
