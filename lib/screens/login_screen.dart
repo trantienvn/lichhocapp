@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../component/button.dart';
-import 'lich_hoc_screen.dart';
+import 'main_screen.dart';
+import '../services/api_service.dart';
 import 'dart:html' as html;
 
 class LoginScreen extends StatefulWidget {
@@ -17,7 +18,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final FocusNode _msvFocusNode = FocusNode();
   final FocusNode _pwdFocusNode = FocusNode();
   bool _obscurePwd = true;
-
+  bool _hasAnError = false;
+  String msg = '';
   @override
   void dispose() {
     _msvController.dispose();
@@ -31,14 +33,32 @@ class _LoginScreenState extends State<LoginScreen> {
     final prefs = await SharedPreferences.getInstance();
     final msv = _msvController.text.trim();
     final pwd = _pwdController.text.trim();
-    if (msv.isEmpty || pwd.isEmpty) return;
+    if (msv.isEmpty || pwd.isEmpty) {
+      setState(() {
+        _hasAnError = true;
+        msg = "Vui lòng nhập đầy đủ thông tin.";
+      });
+      return;
+    }
     await prefs.setString('msv', msv);
     await prefs.setString('pwd', pwd);
     await prefs.setString('university', msv.substring(0, 3).toUpperCase());
-    Navigator.pushReplacement(
+    try {
+      // Thử lấy lịch để kiểm tra thông tin đăng nhập
+      await ApiService.fetchLichThi(msv, pwd);
+      await prefs.setBool('hasLogin', true);
+      Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => const LichHocScreen()),
+      MaterialPageRoute(builder: (_) => const MainScreen()),
     );
+    } catch (e) {
+      setState(() {
+        _hasAnError = true;
+        msg = "Đăng nhập thất bại: $e";
+      });
+      return;
+    }
+    
   }
 
   @override
@@ -161,7 +181,18 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                       ),
-                      const SizedBox(height: 30),
+                      // const SizedBox(height: 20),
+                      ..._hasAnError? [const SizedBox(height: 20),Text(
+                        msg,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: const Color.fromARGB(255, 255, 101, 101),
+                          fontSize: 16,
+                        ),
+                      )] : [
+                        const SizedBox(height: 10),
+                      ],
+                      const SizedBox(height: 20),
                       SizedBox(
                         width: 200,
                         child: GlassmorphismButton(

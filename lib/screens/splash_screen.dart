@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'lich_hoc_screen.dart';
+import 'main_screen.dart';
 import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -21,8 +21,9 @@ class _SplashScreenState extends State<SplashScreen> {
     final prefs = await SharedPreferences.getInstance();
     final msv = prefs.getString('msv');
     final pwd = prefs.getString('pwd');
-    if (msv != null && pwd != null) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LichHocScreen()));
+    final hasLogin = prefs.getBool('hasLogin') ?? false;
+    if (msv != null && pwd != null && hasLogin) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainScreen()));
     } else {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => LoginScreen()));
     }
