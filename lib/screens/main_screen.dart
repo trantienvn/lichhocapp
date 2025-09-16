@@ -28,17 +28,20 @@ class _MainScreenState extends State<MainScreen> {
       _selectedIndex = index;
     });
   }
-  void runFirst() async{
+
+  void runFirst() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _selectedIndex = prefs.getInt('last_tab') ?? 1;
     });
   }
+
   @override
   void initState() {
     super.initState();
     runFirst();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,26 +94,37 @@ class _MainScreenState extends State<MainScreen> {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
           child: Container(
+            height: 80, // tăng chiều cao thanh nav
+            padding: const EdgeInsets.only(bottom: 10), // khoảng cách dưới
             color: const Color.fromARGB(255, 190, 190, 190).withOpacity(0.2),
             child: BottomNavigationBar(
               backgroundColor: Colors.transparent, // giữ trong suốt
               elevation: 0,
               items: const <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.calendar_month),
+                  icon: Padding(
+                    padding: EdgeInsets.only(bottom: 6), // đẩy icon lên
+                    child: Icon(Icons.calendar_month),
+                  ),
                   label: 'Lịch tháng',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.list),
+                  icon: Padding(
+                    padding: EdgeInsets.only(bottom: 6),
+                    child: Icon(Icons.list),
+                  ),
                   label: 'Danh sách',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.info),
+                  icon: Padding(
+                    padding: EdgeInsets.only(bottom: 6),
+                    child: Icon(Icons.info),
+                  ),
                   label: 'Thông tin',
                 ),
               ],
               currentIndex: _selectedIndex,
-              selectedItemColor: const Color.fromARGB(255, 255, 255, 255),
+              selectedItemColor: Colors.white,
               unselectedItemColor: Colors.white60,
               onTap: _onItemTapped,
             ),

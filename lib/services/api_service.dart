@@ -41,9 +41,12 @@ class ApiService {
     try {
       final response = await http.get(url);
       final data = json.decode(response.body);
-      if (data['HoTen'] != null) {
+      if (data['error'] == null) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('name', data['HoTen']);
+        await prefs.setString('nganh', data['NganhHoc']);
+        await prefs.setString('khoa', data['KhoaHoc']);
+        await prefs.setString('lop', data['Lop']);
       }
       if (data['error'] == true) {
         throw TranTienException('${data['message']}');
