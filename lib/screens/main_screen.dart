@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'pages/about.dart';
 import 'pages/calendar_schedule.dart';
 import 'pages/list_schedule.dart';
-
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -14,7 +13,6 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 1;
-
   static const List<Widget> _widgetOptions = <Widget>[
     CalendarSchedulePage(),
     ListSchedulePage(),

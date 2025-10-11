@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lichhocapp/services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../variable.dart' as globalVar;
 
 class AboutPage extends StatefulWidget {
   const AboutPage({super.key});
@@ -11,11 +12,11 @@ class AboutPage extends StatefulWidget {
 }
 
 class AboutPageState extends State<AboutPage> {
-  String fullName = '';
-  String studentId = '';
-  String major = '';
-  String k = '';
-  String className = '';
+  String fullName = globalVar.fullName;
+  String studentId = globalVar.studentId;
+  String major = globalVar.major;
+  String k = globalVar.k;
+  String className = globalVar.className;
   @override
   void initState() {
     // TODO: implement initState
@@ -23,7 +24,7 @@ class AboutPageState extends State<AboutPage> {
     getTT();
   }
   void getTT() async {
-    
+    if (fullName != '') return;
     final prefs = await SharedPreferences.getInstance();
     String msv = prefs.getString('msv') ?? '';
     String pwd = prefs.getString('pwd') ?? '';
@@ -37,6 +38,11 @@ class AboutPageState extends State<AboutPage> {
       major = prefs.getString('nganh') ?? 'Chưa cập nhật';
       k = prefs.getString('khoa') ?? 'Chưa cập nhật';
       className = prefs.getString('lop') ?? 'Chưa cập nhật';
+      globalVar.fullName = fullName;
+      globalVar.studentId = studentId;
+      globalVar.major = major;
+      globalVar.k = k;
+      globalVar.className = className;
     });
   }
   @override

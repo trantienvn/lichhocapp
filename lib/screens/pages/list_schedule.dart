@@ -14,6 +14,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:html' as html;
 import 'package:flutter/gestures.dart';
 import '../../component/dialog.dart';
+import '../../variable.dart' as globalVar;
 
 class ListSchedulePage extends StatefulWidget {
   const ListSchedulePage({super.key});
@@ -484,7 +485,6 @@ class _ListSchedulePageState extends State<ListSchedulePage> {
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
                   child: Container(
-                    width: 300,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
@@ -497,27 +497,15 @@ class _ListSchedulePageState extends State<ListSchedulePage> {
                         Image.asset("assets/oops.png", height: 120),
                         const SizedBox(height: 20),
                         const Text(
-                          "Bạn không có lịch học!",
+                          "Hiện tại bạn đã hết hoặc chưa có lịch học!",
                           style: TextStyle(
                             fontSize: 18,
-                            color: Colors.red,
+                            color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: _logout,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue.withOpacity(0.7),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: const Text(
-                            "Đăng Nhập Lại",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
+                        
                       ],
                     ),
                   ),
@@ -633,6 +621,8 @@ class _ListSchedulePageState extends State<ListSchedulePage> {
 
   List<MonThi> _lichThi = [];
   void _checkLichThi() async {
+    if(!globalVar.isFirstRun) return;
+    globalVar.isFirstRun = false;
     final prefs = await SharedPreferences.getInstance();
     final msv = prefs.getString('msv') ?? '';
     final pwd = prefs.getString('pwd') ?? '';

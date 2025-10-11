@@ -15,6 +15,7 @@ import 'dart:html' as html;
 import 'package:flutter/gestures.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../../component/dialog.dart';
+import '../../variable.dart' as globalVar;
 
 class CalendarSchedulePage extends StatefulWidget {
   const CalendarSchedulePage({super.key});
@@ -628,6 +629,8 @@ class _CalendarSchedulePageState extends State<CalendarSchedulePage> {
 
   List<MonThi> _lichThi = [];
   void _checkLichThi() async {
+    if(!globalVar.isFirstRun) return;
+    globalVar.isFirstRun = false;
     final prefs = await SharedPreferences.getInstance();
     final msv = prefs.getString('msv') ?? '';
     final pwd = prefs.getString('pwd') ?? '';
