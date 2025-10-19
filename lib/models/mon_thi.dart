@@ -26,10 +26,10 @@ class MonThi {
   // Constructor factory để tạo đối tượng từ một Map
   factory MonThi.fromMap(Map<String, dynamic> map) {
     return MonThi(
-      stt: map['STT'] as int,
+      stt: int.parse(map['STT'] as String),
       maHP: map['MaHP'] as String,
       tenHP: map['TenHP'] as String,
-      soTC: map['SoTC'] as int,
+      soTC: int.parse(map['SoTC'] as String),
       ngayThi: map['Ngay'] as String,
       caThi: map['CaThi'] as String,
       hinhThucThi: map['HinhThuc'] as String,
