@@ -621,8 +621,8 @@ class _ListSchedulePageState extends State<ListSchedulePage> {
 
   List<MonThi> _lichThi = [];
   void _checkLichThi() async {
-    if(!globalVar.isFirstRun) return;
-    globalVar.isFirstRun = false;
+    // if(!globalVar.isFirstRun) return;
+    // globalVar.isFirstRun = false;
     final prefs = await SharedPreferences.getInstance();
     final msv = prefs.getString('msv') ?? '';
     final pwd = prefs.getString('pwd') ?? '';
