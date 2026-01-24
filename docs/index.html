@@ -6,6 +6,43 @@
   <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <title>Lịch Học - Ứng dụng thời khóa biểu sinh viên ICTU</title>
+  <meta name="description"
+    content="Ứng dụng xem lịch học theo tuần, hỗ trợ cả Google Meet, giảng viên và phòng học. Tối ưu cho sinh viên ICTU." />
+  <meta name="keywords"
+    content="lich hoc, lịch học ICTU, lịch học sinh viên, app thời khóa biểu, ICTU, thời khóa biểu" />
+  <meta name="author" content="Trần Tiến" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="canonical" href="https://lichhoc.trantien.id.vn/" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Icons -->
+  <link rel="icon" href="./favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png" />
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+
+  <!-- PWA Meta -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Lịch Học" />
+  <link rel="manifest" href="./manifest.json" />
+
+  <!-- Open Graph / Facebook / Zalo -->
+  <meta property="og:locale" content="vi_VN" />
+  <meta property="og:title" content="Lịch Học - Ứng dụng thời khóa biểu sinh viên ICTU" />
+  <meta property="og:description"
+    content="Xem lịch học chi tiết theo tuần, hỗ trợ Google Meet, phòng học và giảng viên." />
+  <meta property="og:image" content="https://lichhoc.trantien.id.vn/icons/icon-512.png" />
+  <meta property="og:url" content="https://lichhoc.trantien.id.vn/" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Lịch Học ICTU" />
+  <meta name="twitter:description" content="Ứng dụng lịch học cho sinh viên ICTU - hỗ trợ offline và chia sẻ." />
+  <meta name="twitter:image" content="https://lichhoc.trantien.id.vn/icons/icon-512.png" />
+
   <!-- The `react-native-web` recommended style reset: https://necolas.github.io/react-native-web/docs/setup/#root-element -->
   <style id="expo-reset">
     /* These styles make the body full-height */
@@ -36,7 +73,29 @@
   </noscript>
   <!-- The root element for your Expo app. -->
   <div id="root"></div>
-  <script src="/_expo/static/js/web/index-f9655a0b41a24efacb5712c0b80fabff.js" defer></script>
+  <script src="/js/web/index-f9655a0b41a24efacb5712c0b80fabff.js" defer></script>
 </body>
 
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Lịch Học ICTU",
+  "operatingSystem": "Web",
+  "applicationCategory": "EducationApplication",
+  "description": "Ứng dụng xem lịch học theo tuần, hỗ trợ cả Google Meet, giảng viên và phòng học.",
+  "url": "https://lichhoc.trantien.id.vn/",
+  "author": {
+    "@type": "Person",
+    "name": "Trần Tiến"
+  },
+  "image": "https://lichhoc.trantien.id.vn/icons/icon-512.png",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "VND"
+  }
+}
+</script>
 </html>
