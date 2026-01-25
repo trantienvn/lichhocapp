@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://lichhoc.trantien.id.vn/sitemap.xml
