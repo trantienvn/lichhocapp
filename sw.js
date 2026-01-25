@@ -1,7 +1,6 @@
-const CACHE_NAME = 'lichhoc-trantien-v3';
+const CACHE_NAME = 'lichhoc-trantien-v2';
 const PRECACHE_ASSETS = [
     '/',
-    '/index.js',
     '/index.html',
     '/manifest.json',
     '/favicon.ico',
