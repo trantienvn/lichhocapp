@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lichhoc-trantien-v4';
+const CACHE_NAME = 'v1.0.4';
 const PRECACHE_ASSETS = [
     '/',
     '/index.js',
